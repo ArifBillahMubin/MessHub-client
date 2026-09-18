@@ -5,34 +5,65 @@ import AuthLayout from "../layouts/AuthLayout/AuthLayout";
 import Login from "../Pages/Auth/Login/Login";
 import Register from "../Pages/Auth/Register/Register";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
+import AboutLayout from "../layouts/AboutLayout/AboutLayout";
+import About from "../Pages/About/About/About";
+import Mission from "../Pages/About/Mission/Mission";
+import Vision from "../Pages/About/Vision/Vision";
+import Team from "../Pages/About/Team/Team";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <RootLayout></RootLayout>,
-        children:[
+        element: <RootLayout />,
+        children: [
             {
                 index: true,
-                element:<Home></Home>
-            }
-        ]
-    },
-    {
-        path:"/",
-        element:<AuthLayout></AuthLayout>,
-        children:[
-            {
-                path:"login",
-                element:<Login></Login>
+                element: <Home />,
             },
-            {
-                path:"register",
-                element:<Register></Register>
-            }
-        ]
+        ],
+    },
+
+    //Auth layout
+    {
+        path: "/",
+        element: <AuthLayout />,
+        children: [
+            { 
+                path: "login",
+                element: <Login />    
+            },
+            { 
+                path: "register", 
+                element: <Register /> 
+            },
+        ],
+    },
+
+    //About Layout
+    {
+        path: "/about",
+        element: <AboutLayout />,
+        children: [
+            { 
+                index: true,
+                element: <About />   
+            },
+            { 
+                path: "mission",
+                element: <Mission /> 
+            },
+            { 
+                path: "vision",
+                element: <Vision />  
+            },
+            { 
+                path: "team",
+                element: <Team />    
+            },
+        ],
     },
     {
         path: "*",
-        element: <ErrorPage />
-    }
+        element: <ErrorPage />,
+    },
 ]);
