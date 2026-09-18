@@ -10,6 +10,9 @@ import About from "../Pages/About/About/About";
 import Mission from "../Pages/About/Mission/Mission";
 import Vision from "../Pages/About/Vision/Vision";
 import Team from "../Pages/About/Team/Team";
+import PrivateRoute from "./privateRoute";
+import DashboardLayout from "../layouts/DashboardLayout/DashboardLayout";
+import DashboardOverview from "../Pages/Dashboard/DashboardOverview";
 
 export const router = createBrowserRouter([
     {
@@ -62,6 +65,24 @@ export const router = createBrowserRouter([
             },
         ],
     },
+
+    //dashboard
+
+    {
+        path: "/dashboard",
+        element: (
+            <PrivateRoute>
+                <DashboardLayout />
+            </PrivateRoute>
+        ),
+        children: [
+            {
+                index: true,
+                element: <DashboardOverview />
+            }
+        ]
+    },
+
     {
         path: "*",
         element: <ErrorPage />,
