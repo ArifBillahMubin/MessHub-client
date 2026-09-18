@@ -1,0 +1,47 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
+import axios from 'axios'
+import useAuth from './useAuth'
+
+const axiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_api_url,
+    withCredentials: true,
+})
+
+const useAxiosSecure = () => {
+    const { user, logout, loading } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!loading && user?.accessToken) {
+            const requestInterceptor = axiosInstance.interceptors.request.use(
+                config => {
+                    config.headers.Authorization = `Bearer ${user.accessToken}`
+                    return config
+                }
+            )
+
+            const responseInterceptor = axiosInstance.interceptors.response.use(
+                res => res,
+                err => {
+                    if (err?.response?.status === 401 || err?.response?.status === 403) {
+                        logout()
+                            .then(() => console.log('Logged out successfully.'))
+                            .catch(console.error)
+                        navigate('/login')
+                    }
+                    return Promise.reject(err)
+                }
+            )
+
+            return () => {
+                axiosInstance.interceptors.request.eject(requestInterceptor)
+                axiosInstance.interceptors.response.eject(responseInterceptor)
+            }
+        }
+    }, [user, loading, logout, navigate])
+
+    return axiosInstance
+}
+
+export default useAxiosSecure
