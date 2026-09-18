@@ -59,40 +59,64 @@ import ContactRequests from "../Pages/Dashboard/Admin/ContactRequests";
 import ChatModeration from "../Pages/Dashboard/Admin/ChatModeration";
 import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
+import HowItWorks from "../Pages/HowItWorks/HowItWorks/HowItWorks";
 
 export const router = createBrowserRouter([
-    // ── Public / root layout ────────────────────────────────────────────────
+    //Root Layout
     {
         path: "/",
         element: <RootLayout />,
         children: [
-            { index: true, element: <Home /> },
+            { 
+                index: true, 
+                element: <Home /> 
+            },
+            { 
+                path: 'how-it-works', 
+                element: <HowItWorks></HowItWorks>
+            },
         ],
     },
 
-    // ── Auth layout ─────────────────────────────────────────────────────────
+    //  Auth layout 
     {
         path: "/",
         element: <AuthLayout />,
         children: [
-            { path: "login",    element: <Login /> },
-            { path: "register", element: <Register /> },
+            { 
+                path: "login",    
+                element: <Login /> },
+            { 
+                path: "register",
+                element: <Register /> 
+            },
         ],
     },
 
-    // ── About layout ────────────────────────────────────────────────────────
+    //  About layout 
     {
         path: "/about",
         element: <AboutLayout />,
         children: [
-            { index: true,      element: <About /> },
-            { path: "mission",  element: <Mission /> },
-            { path: "vision",   element: <Vision /> },
-            { path: "team",     element: <Team /> },
+            { 
+                index: true,
+                element: <About /> 
+            },
+            { 
+                path: "mission",  
+                element: <Mission /> 
+            },
+            { 
+                path: "vision",   
+                element: <Vision /> },
+            { 
+                path: "team",     
+                element: <Team /> 
+            },
         ],
     },
 
-    // ── Member / Manager dashboard  (/dashboard) ────────────────────────────
+    //  Member / Manager dashboard  (/dashboard) 
     // DashboardOverview handles the hasMess split internally.
     {
         path: "/dashboard",
@@ -105,41 +129,105 @@ export const router = createBrowserRouter([
             // index — smart overview (MessSetup or Member/Manager overview)
             { index: true, element: <DashboardOverview /> },
 
-            // ── Member routes ───────────────────────────────────────────────
-            { path: "my-mess",              element: <MyMess /> },
+            //  Member routes 
+            { 
+                path: "my-mess",        
+                element: <MyMess /> },
 
             // Monthly portal group
-            { path: "monthly/meals",        element: <Meals /> },
-            { path: "monthly/bazar",        element: <Bazar /> },
-            { path: "monthly/expenses",     element: <Expenses /> },
-            { path: "monthly/calculation",  element: <MyCalculation /> },
-            { path: "monthly/payments",     element: <MemberPayments /> },
-            { path: "monthly/settlement",   element: <Settlement /> },
-            { path: "monthly/reports",      element: <MonthlyReports /> },
+            { 
+                path: "monthly/meals",
+                element: <Meals /> 
+            },
+            {
+                path: "monthly/bazar",
+                element: <Bazar /> 
+            },
+            {
+                path: "monthly/expenses",
+                element: <Expenses />
+            },
+            { 
+                path: "monthly/calculation",
+                element: <MyCalculation />
+            },
+            { 
+                path: "monthly/payments",
+                element: <MemberPayments /> 
+            },
+            { 
+                path: "monthly/settlement",
+                element: <Settlement />
+            },
+            { 
+                path: "monthly/reports",
+                element: <MonthlyReports />
+            },
 
             // Manager — monthly (extra routes reusing same path prefix)
-            { path: "monthly/current",      element: <CurrentMonth /> },
-            { path: "monthly/calculations", element: <Calculations /> },
+            { 
+                path: "monthly/current",
+                element: <CurrentMonth /> 
+            },
+            { 
+                path: "monthly/calculations",
+                element: <Calculations /> 
+            },
 
-            // ── Shared routes (member + manager) ───────────────────────────
-            { path: "members",              element: <Members /> },
-            { path: "chat",                 element: <MessChat /> },
-            { path: "announcements",        element: <Announcements /> },
-            { path: "polls",                element: <Polls /> },
-            { path: "notifications",        element: <Notifications /> },
-            { path: "profile",              element: <ProfileSettings /> },
+            //  Shared routes (member + manager) 
+            { 
+                path: "members",
+                element: <Members />
+            },
+            { 
+                path: "chat",
+                element: <MessChat />
+            },
+            { 
+                path: "announcements",
+                element: <Announcements />
+            },
+            { 
+                path: "polls",
+                element: <Polls /> 
+            },
+            { 
+                path: "notifications",
+                element: <Notifications />
+            },
+            { 
+                path: "profile", 
+                element: <ProfileSettings />
+            },
 
-            // ── Manager-only routes ─────────────────────────────────────────
-            { path: "mess/members",         element: <MessMembers /> },
-            { path: "mess/join-requests",   element: <JoinRequests /> },
-            { path: "mess/public-post",     element: <PublicMessPost /> },
-            { path: "mess/settings",        element: <MessSettings /> },
-            { path: "service-plan",         element: <ServicePlan /> },
-            { path: "settings",             element: <Settings /> },
+            //  Manager-only routes 
+            { 
+                path: "mess/members",
+                element: <MessMembers /> 
+            },
+            {
+                path: "mess/join-requests",
+                element: <JoinRequests /> 
+            },
+            { 
+                path: "mess/public-post",
+                element: <PublicMessPost /> },
+            { 
+                path: "mess/settings",
+                element: <MessSettings /> 
+            },
+            { 
+                path: "service-plan", 
+                element: <ServicePlan /> 
+            },
+            { 
+                path: "settings",
+                element: <Settings /> 
+            },
         ],
     },
 
-    // ── Super Admin dashboard  (/admin) ─────────────────────────────────────
+    //  Super Admin dashboard  (/admin) 
     {
         path: "/admin",
         element: (
@@ -148,24 +236,67 @@ export const router = createBrowserRouter([
             </PrivateRoute>
         ),
         children: [
-            { index: true,                          element: <DashboardOverview /> },
-            { path: "users",                        element: <AdminUsers /> },
-            { path: "messes",                       element: <AdminMesses /> },
-            { path: "managers",                     element: <AdminManagers /> },
-            { path: "public-posts/moderation",      element: <PostModeration /> },
-            { path: "reports",                      element: <Reports /> },
-            { path: "audit-logs",                   element: <AuditLogs /> },
-            { path: "analytics",                    element: <Analytics /> },
-            { path: "pricing",                      element: <Plans /> },
-            { path: "subscriptions",                element: <Subscriptions /> },
-            { path: "custom-requests",              element: <CustomRequests /> },
-            { path: "contact-requests",             element: <ContactRequests /> },
-            { path: "moderation",                   element: <ChatModeration /> },
-            { path: "notifications",                element: <AdminNotifications /> },
-            { path: "settings",                     element: <AdminSettings /> },
+            { 
+                index: true,
+                element: <DashboardOverview /> 
+            },
+            { 
+                path: "users",
+                element: <AdminUsers /> },
+            { 
+                path: "messes",
+                element: <AdminMesses /> 
+            },
+            { 
+                path: "managers",
+                element: <AdminManagers /> 
+            },
+            { 
+                path: "public-posts/moderation",
+                element: <PostModeration /> 
+            },
+            { 
+                path: "reports",
+                element: <Reports /> 
+            },
+            { 
+                path: "audit-logs",
+                element: <AuditLogs /> 
+            },
+            { 
+                path: "analytics",
+                element: <Analytics />
+            },
+            { 
+                path: "pricing",
+                element: <Plans /> 
+            },
+            { 
+                path: "subscriptions",
+                element: <Subscriptions /> 
+            },
+            { 
+                path: "custom-requests",
+                element: <CustomRequests /> 
+            },
+            { 
+                path: "contact-requests",
+                element: <ContactRequests /> 
+            },
+            { 
+                path: "moderation",
+                element: <ChatModeration /> 
+            },
+            { 
+                path: "notifications", 
+                element: <AdminNotifications /> },
+            { 
+                path: "settings",
+                element: <AdminSettings /> 
+            },
         ],
     },
 
-    // ── 404 ─────────────────────────────────────────────────────────────────
+    //  404 
     { path: "*", element: <ErrorPage /> },
 ]);
