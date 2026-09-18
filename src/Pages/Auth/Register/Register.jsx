@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import useAuth from "../../../hooks/useAuth";
 import SocialLogin from "../SocialLogin/SocialLogin";
-import axios from "axios";
+import { imageUpload, saveUser } from "../../../utils";
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -50,83 +50,83 @@ const Register = () => {
         return URL.createObjectURL(selectedPhoto[0]);
     }, [selectedPhoto]);
 
-    const handleRegister = (data) => {
+    const handleRegister = async (data) => {
         setLoading(true);
 
         const profileImage = data.profilePhoto?.[0];
+        let uploadedPhotoURL = "";
 
-        if (!profileImage) {
-            toast.error("Please upload a profile photo.");
-            setLoading(false);
-            return;
-        }
+        try {
+            //  upload photo if provided 
+            if (profileImage) {
+                uploadedPhotoURL = await imageUpload(profileImage);
+            }
 
-        // Create Firebase account
-        registerUser(data.email, data.password)
-            .then((result) => {
-                console.log("Registered user:", result.user);
+            // create Firebase account
+            const result = await registerUser(data.email, data.password);
+            console.log("Registered Firebase user:", result.user);
 
-                // Upload profile photo to ImgBB
-                const formData = new FormData();
-                formData.append("image", profileImage);
-
-                const imgApiUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host}`;
-
-                return axios.post(imgApiUrl, formData);
-            })
-            .then((res) => {
-                const photoURL = res.data.data.url;
-
-                // Update Firebase profile
-                const userProfile = {
-                    displayName: data.name,
-                    photoURL: photoURL,
-                };
-
-                return updateUserProfile(userProfile);
-            })
-            .then(() => {
-                toast.success("Account created successfully! 🎉", {
-                    duration: 3000,
-                    style: {
-                        borderRadius: "12px",
-                        background: "#D5FBF9",
-                        color: "#173B3A",
-                        border: "1px solid #006B68",
-                        fontWeight: "600",
-                    },
-                    iconTheme: {
-                        primary: "#006B68",
-                        secondary: "#ffffff",
-                    },
-                });
-
-                navigate(location.state || "/");
-            })
-            .catch((error) => {
-                console.error(error);
-
-                toast.error(
-                    error?.message || "Registration failed. Please try again.",
-                    {
-                        duration: 3500,
-                        style: {
-                            borderRadius: "12px",
-                            background: "#ffffff",
-                            color: "#173B3A",
-                            border: "1px solid #FF8A00",
-                            fontWeight: "600",
-                        },
-                        iconTheme: {
-                            primary: "#FF8A00",
-                            secondary: "#ffffff",
-                        },
-                    }
-                );
-            })
-            .finally(() => {
-                setLoading(false);
+            // update Firebase profile with name + photo
+            await updateUserProfile({
+                displayName: data.name,
+                photoURL: uploadedPhotoURL,
             });
+
+            // save user to MongoDB (backend deduplicates by email)
+            const userData = {
+                email: data.email,
+                name: data.name,
+                photoURL: uploadedPhotoURL,
+                phone: data.phone || "",
+                location: data.location || "",
+                status: data.status || "",
+                bio: data.bio || "",
+            };
+            await saveUser(userData);
+
+            // success
+            toast.success("Account created successfully! 🎉", {
+                duration: 3000,
+                style: {
+                    borderRadius: "12px",
+                    background: "#D5FBF9",
+                    color: "#173B3A",
+                    border: "1px solid #006B68",
+                    fontWeight: "600",
+                },
+                iconTheme: {
+                    primary: "#006B68",
+                    secondary: "#ffffff",
+                },
+            });
+
+            navigate(location.state || "/");
+        } catch (error) {
+            console.error("Registration error:", error);
+
+            // Surface the actual error message so it's diagnosable
+            const message =
+                error?.response?.data?.message ||
+                error?.message ||
+                "Registration failed. Please try again.";
+
+            toast.error(message, {
+                duration: 3500,
+                style: {
+                    borderRadius: "12px",
+                    background: "#ffffff",
+                    color: "#173B3A",
+                    border: "1px solid #FF8A00",
+                    fontWeight: "600",
+                },
+                iconTheme: {
+                    primary: "#FF8A00",
+                    secondary: "#ffffff",
+                },
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
