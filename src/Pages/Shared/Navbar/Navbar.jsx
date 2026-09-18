@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router";
-import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
 import { toast } from "react-hot-toast";
 import logo from "../../../assets/logo/logo.png";
 import useAuth from "../../../hooks/useAuth";
+import useRole from "../../../hooks/useRole";
+import useCurrentUser from "../../../hooks/useCurrentUser";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +15,19 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const { user, logout } = useAuth();
+    const [role, isRoleLoading] = useRole();
+    const { currentUser, isUserLoading } = useCurrentUser();
+
+    // Derive the correct "My Mess" destination based on role + hasMess
+    const getMyMessPath = () => {
+        if (role === "super_admin") return "/admin";
+        if (role === "manager") return "/dashboard";
+        // member — hasMess false goes to /dashboard (which shows MessSetup), true to /dashboard/my-mess
+        if (role === "member") return currentUser?.hasMess ? "/dashboard/my-mess" : "/dashboard";
+        return "/dashboard";
+    };
+    const myMessPath = getMyMessPath();
+    const showMyMess = !!user && !isRoleLoading && !isUserLoading;
 
     const navItems = [
         { name: "Home", path: "/" },
@@ -20,7 +35,6 @@ const Navbar = () => {
         { name: "How It Works", path: "/how-it-works" },
         { name: "Pricing", path: "/pricing" },
         { name: "About", path: "/about" },
-        { name: "Contact", path: "/contact" },
     ];
 
     // Close dropdown when clicking outside
@@ -110,6 +124,23 @@ const Navbar = () => {
                                 {item.name}
                             </NavLink>
                         ))}
+
+                        {/* My Mess — only shown to authenticated users once role is resolved */}
+                        {showMyMess && (
+                            <NavLink
+                                to={myMessPath}
+                                className={({ isActive }) =>
+                                    `flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                                        isActive
+                                            ? "bg-primary text-white"
+                                            : "text-primary hover:bg-primary hover:text-white"
+                                    }`
+                                }
+                            >
+                                <LayoutDashboard size={14} strokeWidth={2.5} />
+                                My Mess
+                            </NavLink>
+                        )}
                     </div>
 
                     {/* Desktop Right Side */}
@@ -268,6 +299,24 @@ const Navbar = () => {
                                     {item.name}
                                 </NavLink>
                             ))}
+
+                            {/* My Mess — mobile */}
+                            {showMyMess && (
+                                <NavLink
+                                    to={myMessPath}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                                            isActive
+                                                ? "bg-primary text-white"
+                                                : "text-primary hover:bg-primary hover:text-white"
+                                        }`
+                                    }
+                                >
+                                    <LayoutDashboard size={15} strokeWidth={2.5} />
+                                    My Mess
+                                </NavLink>
+                            )}
                         </div>
 
                         {/* Mobile Actions */}
