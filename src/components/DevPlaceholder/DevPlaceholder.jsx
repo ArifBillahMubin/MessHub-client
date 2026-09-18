@@ -11,7 +11,7 @@ const DevPlaceholder = ({ title = "Page" }) => {
             <div>
                 <h2 className="text-xl font-extrabold text-neutral">{title}</h2>
                 <p className="mt-1.5 text-sm font-medium text-neutral/50">
-                    This page is currently under development.
+                    This page is currently under development. updated
                 </p>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
