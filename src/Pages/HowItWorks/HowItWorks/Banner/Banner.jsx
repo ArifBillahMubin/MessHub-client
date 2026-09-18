@@ -6,7 +6,7 @@ const Banner = () => {
         <section className="relative overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8">
       
       {/* Background Glow */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[650px] -translate-x-1/2 rounded-full bg-[#006B68]/30 blur-[100px]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[270px] w-[650px] -translate-x-1/2 rounded-full bg-[#006B68]/30 blur-[100px]" />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center text-center">
 
