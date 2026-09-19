@@ -5,6 +5,7 @@ import AuthLayout from "../layouts/AuthLayout/AuthLayout";
 import Login from "../Pages/Auth/Login/Login";
 import Register from "../Pages/Auth/Register/Register";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
+import Pricing from "../Pages/Pricing/Pricing";
 
 export const router = createBrowserRouter([
     {
@@ -14,7 +15,11 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 element:<Home></Home>
-            }
+            },
+             {
+        path: "pricing",
+        element: <Pricing />,
+    },
         ]
     },
     {
