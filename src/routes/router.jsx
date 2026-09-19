@@ -60,6 +60,7 @@ import ChatModeration from "../Pages/Dashboard/Admin/ChatModeration";
 import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 
+
 export const router = createBrowserRouter([
     // ── Public / root layout ────────────────────────────────────────────────
     {
@@ -168,4 +169,5 @@ export const router = createBrowserRouter([
 
     // ── 404 ─────────────────────────────────────────────────────────────────
     { path: "*", element: <ErrorPage /> },
+    
 ]);
