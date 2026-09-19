@@ -133,7 +133,12 @@ export const router = createBrowserRouter([
             //  Member routes 
             { 
                 path: "my-mess",        
-                element: <MyMess /> },
+                element: <MyMess /> 
+            },
+            {
+                path: "create-mess",
+                element: <CreateMessForm />
+            },
 
             // Monthly portal group
             { 
