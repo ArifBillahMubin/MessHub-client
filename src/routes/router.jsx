@@ -18,6 +18,7 @@ import DashboardOverview from "../Pages/Dashboard/DashboardOverview";
 
 // Member pages
 import MyMess from "../Pages/Dashboard/Member/MyMess";
+import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
 import Meals from "../Pages/Dashboard/Member/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Member/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Member/Monthly/Expenses";
@@ -61,7 +62,7 @@ import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 
 export const router = createBrowserRouter([
-    // ── Public / root layout ────────────────────────────────────────────────
+    //  Public / root layout 
     {
         path: "/",
         element: <RootLayout />,
@@ -70,7 +71,7 @@ export const router = createBrowserRouter([
         ],
     },
 
-    // ── Auth layout ─────────────────────────────────────────────────────────
+    //  Auth layout 
     {
         path: "/",
         element: <AuthLayout />,
@@ -80,7 +81,7 @@ export const router = createBrowserRouter([
         ],
     },
 
-    // ── About layout ────────────────────────────────────────────────────────
+    //  About layout 
     {
         path: "/about",
         element: <AboutLayout />,
@@ -92,7 +93,7 @@ export const router = createBrowserRouter([
         ],
     },
 
-    // ── Member / Manager dashboard  (/dashboard) ────────────────────────────
+    //  Member / Manager dashboard  (/dashboard) 
     // DashboardOverview handles the hasMess split internally.
     {
         path: "/dashboard",
@@ -105,8 +106,9 @@ export const router = createBrowserRouter([
             // index — smart overview (MessSetup or Member/Manager overview)
             { index: true, element: <DashboardOverview /> },
 
-            // ── Member routes ───────────────────────────────────────────────
+            //  Member routes 
             { path: "my-mess",              element: <MyMess /> },
+            { path: "create-mess",          element: <CreateMessForm /> },
 
             // Monthly portal group
             { path: "monthly/meals",        element: <Meals /> },
@@ -166,6 +168,6 @@ export const router = createBrowserRouter([
         ],
     },
 
-    // ── 404 ─────────────────────────────────────────────────────────────────
+    //  404 
     { path: "*", element: <ErrorPage /> },
 ]);
