@@ -76,6 +76,10 @@ export const router = createBrowserRouter([
                 path: 'how-it-works', 
                 element: <HowItWorks></HowItWorks>
             },
+            {
+                path: "pricing",
+                element: <Pricing />,
+            },
         ],
     },
 
