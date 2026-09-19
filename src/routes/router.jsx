@@ -63,6 +63,8 @@ import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 import HowItWorks from "../Pages/HowItWorks/HowItWorks/HowItWorks";
 import Pricing from "../Pages/Pricing/Pricing";
 
+
+
 export const router = createBrowserRouter([
     //Root Layout
     {
@@ -310,4 +312,6 @@ export const router = createBrowserRouter([
 
     //  404 
     { path: "*", element: <ErrorPage /> },
+    
+    
 ]);
