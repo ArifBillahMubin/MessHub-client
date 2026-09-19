@@ -21,7 +21,6 @@ const Footer = () => {
         { name: "How It Works", path: "/how-it-works" },
         { name: "Pricing", path: "/pricing" },
         { name: "About Us", path: "/about" },
-        { name: "Contact Support", path: "/contact" },
     ];
 
     const legalLinks = [

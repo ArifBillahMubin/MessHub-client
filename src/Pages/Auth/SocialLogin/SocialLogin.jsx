@@ -3,6 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import useAuth from "../../../hooks/useAuth";
+import { saveUser } from "../../../utils";
 
 const SocialLogin = () => {
     const { signinGoogle, loading, setLoading } = useAuth();
@@ -14,6 +15,21 @@ const SocialLogin = () => {
         setLoading(true);
 
         signinGoogle()
+            .then((result) => {
+                const firebaseUser = result.user;
+
+                // Save to MongoDB 
+                const userData = {
+                    email: firebaseUser.email,
+                    name: firebaseUser.displayName || "",
+                    photoURL: firebaseUser.photoURL || "",
+                    phone: "",
+                    location: "",
+                    status: "",
+                    bio: "",
+                };
+                return saveUser(userData);
+            })
             .then(() => {
                 toast.success("Welcome to MessHub! 🎉", {
                     duration: 3000,
