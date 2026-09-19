@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router";
 import { PlusCircle, KeyRound } from "lucide-react";
 
 // Shown when role === "member" && hasMess === false
 // Gives the user a choice to create a new mess or join one by code.
 const MessSetup = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="flex min-h-[70vh] flex-col items-center justify-center px-4">
 
@@ -36,15 +39,11 @@ const MessSetup = () => {
                     </div>
                     <button
                         type="button"
-                        disabled
-                        className="mt-auto w-full rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white opacity-50 cursor-not-allowed"
-                        title="Coming soon"
+                        onClick={() => navigate("/dashboard/create-mess")}
+                        className="mt-auto w-full rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-md active:translate-y-0"
                     >
                         Create Mess
                     </button>
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">
-                        Under Development
-                    </p>
                 </div>
 
                 {/* Join by Mess Code */}

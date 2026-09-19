@@ -18,6 +18,7 @@ import DashboardOverview from "../Pages/Dashboard/DashboardOverview";
 
 // Member pages
 import MyMess from "../Pages/Dashboard/Member/MyMess";
+import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
 import Meals from "../Pages/Dashboard/Member/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Member/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Member/Monthly/Expenses";
