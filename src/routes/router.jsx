@@ -61,6 +61,7 @@ import ChatModeration from "../Pages/Dashboard/Admin/ChatModeration";
 import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 import HowItWorks from "../Pages/HowItWorks/HowItWorks/HowItWorks";
+import Pricing from "../Pages/Pricing/Pricing";
 
 export const router = createBrowserRouter([
     //Root Layout
