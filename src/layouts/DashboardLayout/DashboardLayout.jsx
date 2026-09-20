@@ -10,6 +10,7 @@ import logo from "../../assets/logo/logo.png";
 import { useState } from "react";
 import useRole from "../../hooks/useRole";
 import useCurrentUser from "../../hooks/useCurrentUser";
+import useMessRole from "../../hooks/useMessRole";
 import useAuth from "../../hooks/useAuth";
 import Loading from "../../components/Loading/Loading";
 import { toast } from "react-hot-toast";
@@ -188,18 +189,32 @@ const DashboardLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const { user, logout } = useAuth();
-    const [role, isRoleLoading] = useRole();
-    const { currentUser, isUserLoading } = useCurrentUser();
+    const [role, isRoleLoading] = useRole();                      // global account role (member | super_admin)
+    const { currentUser, isUserLoading } = useCurrentUser();      // MongoDB user doc (hasMess etc.)
+    const [messRole, isMessRoleLoading] = useMessRole();          // mess-level role (manager | member | null)
     const navigate = useNavigate();
 
-    const isLoading = isRoleLoading || isUserLoading;
+    const isLoading = isRoleLoading || isUserLoading || isMessRoleLoading;
 
-    // Pick the correct menu based on role
-    const menuItems = role === "super_admin"
-        ? adminMenu
-        : role === "manager"
-        ? managerMenu
-        : memberMenu;
+    // ── Sidebar menu selection ─────────────────────────────────────────────
+    // super_admin always gets the admin menu regardless of mess state.
+    // For all other users: if they have a mess and their messMembers role is
+    // "manager", show the manager menu. Otherwise show the member menu.
+    // While loading, default to memberMenu to avoid a flash of the wrong menu.
+    const menuItems =
+        role === "super_admin"
+            ? adminMenu
+            : messRole === "manager"
+            ? managerMenu
+            : memberMenu;
+
+    // Role label shown in the sidebar badge
+    const roleBadgeLabel =
+        role === "super_admin"
+            ? "Super Admin"
+            : messRole === "manager"
+            ? "Manager"
+            : "Member";
 
     const handleLogout = () => {
         logout()
@@ -263,11 +278,11 @@ const DashboardLayout = () => {
                 {/* Navigation */}
                 <nav className="h-[calc(100vh-4rem)] overflow-y-auto p-3">
                     {/* Role badge */}
-                    {isOpen && role && (
+                    {isOpen && (role || messRole) && (
                         <div className="mb-3 px-3">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
                                 <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-                                {role === "super_admin" ? "Super Admin" : role === "manager" ? "Manager" : "Member"}
+                                {roleBadgeLabel}
                             </span>
                         </div>
                     )}

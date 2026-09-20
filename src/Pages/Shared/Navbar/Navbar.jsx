@@ -6,6 +6,7 @@ import logo from "../../../assets/logo/logo.png";
 import useAuth from "../../../hooks/useAuth";
 import useRole from "../../../hooks/useRole";
 import useCurrentUser from "../../../hooks/useCurrentUser";
+import useMessRole from "../../../hooks/useMessRole";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,17 +18,22 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     const [role, isRoleLoading] = useRole();
     const { currentUser, isUserLoading } = useCurrentUser();
+    const [messRole, isMessRoleLoading] = useMessRole();
 
-    // Derive the correct "My Mess" destination based on role + hasMess
+    // Derive the correct "My Mess" destination:
+    //   super_admin               → /admin
+    //   member, hasMess=false     → /dashboard  (shows MessSetup: Create + Join)
+    //   member, hasMess=true,
+    //     messRole=manager        → /dashboard  (manager overview)
+    //   member, hasMess=true,
+    //     messRole=member         → /dashboard  (member overview)
     const getMyMessPath = () => {
         if (role === "super_admin") return "/admin";
-        if (role === "manager") return "/dashboard";
-        // member — hasMess false goes to /dashboard (which shows MessSetup), true to /dashboard/my-mess
-        if (role === "member") return currentUser?.hasMess ? "/dashboard/my-mess" : "/dashboard";
         return "/dashboard";
     };
     const myMessPath = getMyMessPath();
-    const showMyMess = !!user && !isRoleLoading && !isUserLoading;
+    // Only show the link once all role/user data is resolved — prevents flash
+    const showMyMess = !!user && !isRoleLoading && !isUserLoading && !isMessRoleLoading;
 
     const navItems = [
         { name: "Home", path: "/" },
