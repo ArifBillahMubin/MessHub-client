@@ -19,6 +19,7 @@ import DashboardOverview from "../Pages/Dashboard/DashboardOverview";
 // Member pages
 import MyMess from "../Pages/Dashboard/Member/MyMess";
 import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
+import JoinMessPage from "../Pages/Dashboard/Member/JoinMessPage";
 import Meals from "../Pages/Dashboard/Member/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Member/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Member/Monthly/Expenses";
@@ -143,6 +144,10 @@ export const router = createBrowserRouter([
             {
                 path: "create-mess",
                 element: <CreateMessForm />
+            },
+            {
+                path: "join-mess",
+                element: <JoinMessPage />
             },
 
             // Monthly portal group
