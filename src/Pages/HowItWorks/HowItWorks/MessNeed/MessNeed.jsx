@@ -43,9 +43,9 @@ const features = [
 
 const MessNeed = () => {
   return (
-    <section className="border-l-4 border-blue-600 bg-white px-5 py-10 sm:px-8">
+    <section className="border-l-4 border-blue-600  px-5 py-10 sm:px-8 mx-w-7xl">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-start">
+      <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-start ">
         <div>
           <h2 className="text-2xl font-extrabold leading-tight text-slate-900 sm:text-3xl">
             Everything your mess needs, every month.

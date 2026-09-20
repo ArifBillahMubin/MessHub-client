@@ -42,9 +42,9 @@ const lineItems = [
 
 const CloseTheMonth = () => {
   return (
-    <section className="bg-white px-5 py-14 sm:px-8">
+    <section className=" px-5 py-14 sm:px-8">
       {/* Header */}
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
           Close the month. Keep the history.
         </h2>

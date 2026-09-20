@@ -33,7 +33,7 @@ const steps = [
 
 const FindMess = () => {
   return (
-    <section className="bg-white mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+    <section className=" mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div>

@@ -2,8 +2,8 @@ import { FiSearch, FiPlusCircle } from "react-icons/fi";
 
 const FooterBanner = () => {
   return (
-    <section className="px-5 py-10 sm:px-8 bg-white">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-900 px-6 py-14 text-center sm:px-10">
+    <section className="px-5 py-10 sm:px-8 ">
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-900 px-6 py-14 text-center sm:px-10">
         {/* Decorative blurred blobs */}
         <div className="pointer-events-none absolute -left-10 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-3xl" />
         <div className="pointer-events-none absolute -right-10 bottom-0 h-56 w-56 rounded-full bg-cyan-300/20 blur-3xl" />
