@@ -36,8 +36,8 @@ const JoinRequests = () => {
         } finally {
             setLoading(false);
         }
-    }, [user?.email, axiosSecure]);
-
+    }, [user, axiosSecure]);
+    
     useEffect(() => { fetchData(); }, [fetchData]);
 
     const handleApprove = async (req) => {
@@ -108,7 +108,7 @@ const JoinRequests = () => {
     if (loading) return <Loading />;
 
     return (
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
 
             {/* Page header */}
             <div className="mb-6">
