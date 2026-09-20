@@ -65,6 +65,9 @@ import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 import HowItWorks from "../Pages/HowItWorks/HowItWorks/HowItWorks";
 import Pricing from "../Pages/Pricing/Pricing";
+import FindMess from "../Pages/FindMess/FindMess";
+import FindMessMapPage from "../Pages/FindMess/FindMessMapPage";
+import MessDetailsPage from "../Pages/FindMess/MessDetailsPage";
 
 
 
@@ -85,6 +88,14 @@ export const router = createBrowserRouter([
             {
                 path: "pricing",
                 element: <Pricing />,
+            },
+            {
+                path: "find-mess",
+                element: <FindMess />,
+            },
+            {
+                path: "find-mess/:id",
+                element: <MessDetailsPage />,
             },
         ],
     },
@@ -328,6 +339,10 @@ export const router = createBrowserRouter([
 
     //  404 
     { path: "*", element: <ErrorPage /> },
-    
-    
+
+    // Full map page — standalone (no Navbar/Footer, full-screen)
+    {
+        path: "/find-mess/map",
+        element: <FindMessMapPage />,
+    },
 ]);
