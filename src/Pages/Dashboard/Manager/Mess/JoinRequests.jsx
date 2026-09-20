@@ -108,7 +108,7 @@ const JoinRequests = () => {
     if (loading) return <Loading />;
 
     return (
-        <div className="p-8">
+        <div className="mx-auto max-w-5xl">
 
             {/* Page header */}
             <div className="mb-6">

@@ -176,7 +176,7 @@ const MessMembers = () => {
     if (messLoading) return <Loading />;
 
     return (
-        <div className="mx-auto p-8">
+        <div className="mx-auto max-w-5xl">
 
             {/* Header */}
             <div className="mb-6">
