@@ -3,7 +3,7 @@ import { TbArrowBigUpLines } from 'react-icons/tb';
 
 const Banner = () => {
     return (
-        <section className="relative overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden  px-4 py-16 sm:px-6 lg:px-8">
       
       {/* Background Glow */}
       <div className="pointer-events-none absolute left-1/2 top-0 h-[270px] w-[650px] -translate-x-1/2 rounded-full bg-[#006B68]/30 blur-[100px]" />
@@ -78,7 +78,7 @@ const Banner = () => {
             <div className="items-center gap-1.5 rounded-full bg-green-400 px-3 py-1">
               <span className=" w-1 rounded-full " />
 
-              <span className="flex text-[9px] font-bold text-black ">
+              <span className="flex text-[8.5px] font-bold text-black ">
                 Live Sync
               </span>
             </div>

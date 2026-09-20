@@ -1,6 +1,10 @@
 import Banner from './Banner/Banner';
+import CloseTheMonth from './CloseTheMonth/CloseTheMonth';
 import FindMess from './FindMess/FindMess';
 import FindRightPlace from './FindRightPlace/FindRightPlace';
+import FooterBanner from './FooterBanner/FooterBanner';
+import MessNeed from './MessNeed/MessNeed';
+
 
 
 const HowItWorks = () => {
@@ -9,6 +13,10 @@ const HowItWorks = () => {
             <Banner></Banner>
             <FindMess></FindMess>
             <FindRightPlace></FindRightPlace>
+            <MessNeed></MessNeed>
+            <CloseTheMonth></CloseTheMonth>
+            <FooterBanner></FooterBanner>
+            
             
 
         </div>

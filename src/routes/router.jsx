@@ -40,6 +40,8 @@ import ProfileSettings from "../Pages/Dashboard/Shared/ProfileSettings";
 import MessMembers from "../Pages/Dashboard/Manager/Mess/MessMembers";
 import JoinRequests from "../Pages/Dashboard/Manager/Mess/JoinRequests";
 import PublicMessPost from "../Pages/Dashboard/Manager/Mess/PublicMessPost";
+import CreatePublicPost from "../Pages/Dashboard/Manager/Mess/CreatePublicPost";
+import EditPublicPost from "../Pages/Dashboard/Manager/Mess/EditPublicPost";
 import MessSettings from "../Pages/Dashboard/Manager/Mess/MessSettings";
 import CurrentMonth from "../Pages/Dashboard/Manager/Monthly/CurrentMonth";
 import Calculations from "../Pages/Dashboard/Manager/Monthly/Calculations";
@@ -63,6 +65,8 @@ import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 import HowItWorks from "../Pages/HowItWorks/HowItWorks/HowItWorks";
 import Pricing from "../Pages/Pricing/Pricing";
+
+
 
 export const router = createBrowserRouter([
     //Root Layout
@@ -227,7 +231,16 @@ export const router = createBrowserRouter([
             },
             { 
                 path: "mess/public-post",
-                element: <PublicMessPost /> },
+                element: <PublicMessPost />
+            },
+            {
+                path: "mess/public-post/create",
+                element: <CreatePublicPost />
+            },
+            {
+                path: "mess/public-post/edit/:id",
+                element: <EditPublicPost />
+            },
             { 
                 path: "mess/settings",
                 element: <MessSettings /> 
@@ -315,4 +328,6 @@ export const router = createBrowserRouter([
 
     //  404 
     { path: "*", element: <ErrorPage /> },
+    
+    
 ]);

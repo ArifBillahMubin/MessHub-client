@@ -26,7 +26,7 @@ const phases = [
 
 const FindRightPlace = () => {
   return (
-    <section className="mx-auto max-w-6xl bg-white px-4 py-14 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl  px-4 py-14 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="text-center">
 
