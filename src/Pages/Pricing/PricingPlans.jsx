@@ -43,6 +43,7 @@ const customFeatures = [
 const plans = [
   {
     name: "Free",
+    featured: true,
     members: "1–8 Active Members",
     title: "Free",
     suffix: "/ forever",
@@ -66,7 +67,6 @@ const plans = [
     features: standardFeatures,
     button: "View Plan Details",
     href: "#member-thresholds",
-    featured: true,
     badgeClass: "bg-background text-primary",
     iconClass: "text-primary",
     buttonClass: "bg-primary text-white",
@@ -87,6 +87,9 @@ const plans = [
     buttonClass: "bg-tertiary text-neutral",
   },
 ];
+
+// Display order: Paid on the left, Free in the center, Custom on the right.
+const orderedPlans = [plans[1], plans[0], plans[2]];
 
 const PricingPlans = () => {
   return (
@@ -136,11 +139,11 @@ const PricingPlans = () => {
           </div>
         </header>
 
-        <div className="mt-12 grid items-start gap-8 lg:grid-cols-3 lg:gap-6">
-          {plans.map((plan) => {
+        <div className="mt-14 grid items-stretch gap-8 lg:grid-cols-3 lg:gap-6">
+          {orderedPlans.map((plan) => {
             const buttonClass = `
-              mt-7 inline-flex w-full items-center justify-center gap-2
-              rounded-full px-5 py-3 text-sm font-semibold shadow-md
+              inline-flex w-full items-center justify-center gap-2
+              rounded-xl px-5 py-3.5 text-sm font-bold shadow-sm
               transition hover:brightness-95
               focus-visible:outline-2 focus-visible:outline-offset-4
               focus-visible:outline-primary
@@ -150,16 +153,16 @@ const PricingPlans = () => {
             return (
               <article
                 key={plan.name}
-                className={`relative rounded-3xl bg-white p-6 shadow-lg shadow-neutral/5 ring-1 sm:p-7 ${
+                className={`relative flex min-w-0 flex-col rounded-3xl border p-6 transition-shadow duration-200 sm:p-7 ${
                   plan.featured
-                    ? "ring-primary/15"
-                    : "ring-neutral/5"
+                    ? "border-primary/40 bg-gradient-to-b from-background/70 via-white to-white shadow-xl shadow-primary/10"
+                    : "border-primary/10 bg-white shadow-sm hover:shadow-lg hover:shadow-primary/5"
                 }`}
               >
                 {plan.featured && (
                   <div className="absolute -top-4 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-primary to-secondary px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-white">
                     <Star size={13} aria-hidden="true" />
-                    Most popular for flats
+                    Start with Free
                   </div>
                 )}
 
@@ -176,8 +179,8 @@ const PricingPlans = () => {
                   </span>
                 </div>
 
-                <div className="mt-6">
-                  <p className="text-4xl font-extrabold tracking-tight text-neutral">
+                <div className="mt-6 lg:min-h-[168px]">
+                  <p className="text-4xl font-extrabold tracking-tight text-neutral sm:text-5xl lg:text-4xl xl:text-5xl">
                     {plan.title}
                     {plan.suffix && (
                       <span className="ml-1 text-xs font-medium tracking-normal">
@@ -197,16 +200,16 @@ const PricingPlans = () => {
                   </p>
                 </div>
 
-                <div className="mt-7 border-t border-primary/15 pt-6">
+                <div className="mt-6 border-t border-primary/10 pt-6">
                   <h3 className="text-xs font-bold uppercase tracking-wide text-primary">
                     {plan.label}
                   </h3>
 
-                  <ul className="mt-4 space-y-3">
+                  <ul className={`mt-5 grid gap-x-4 gap-y-3.5 ${plan.featured ? "sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2" : "grid-cols-1"}`}>
                     {plan.features.map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-start gap-2.5 text-sm leading-5 text-neutral"
+                        className="flex items-start gap-2.5 text-[13px] leading-6 text-neutral/85"
                       >
                         {plan.name === "Custom" ? (
                           <Building2
@@ -227,6 +230,7 @@ const PricingPlans = () => {
                   </ul>
                 </div>
 
+                <div className="mt-auto pt-8">
                 {plan.to ? (
                   <Link to={plan.to} className={buttonClass}>
                     {plan.button}
@@ -238,6 +242,7 @@ const PricingPlans = () => {
                     <ArrowRight size={16} aria-hidden="true" />
                   </a>
                 )}
+                </div>
               </article>
             );
           })}
@@ -246,5 +251,6 @@ const PricingPlans = () => {
     </section>
   );
 };
+
 
 export default PricingPlans;
