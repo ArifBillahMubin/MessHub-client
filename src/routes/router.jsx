@@ -19,6 +19,7 @@ import DashboardOverview from "../Pages/Dashboard/DashboardOverview";
 // Member pages
 import MyMess from "../Pages/Dashboard/Member/MyMess";
 import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
+import JoinMessPage from "../Pages/Dashboard/Member/JoinMessPage";
 import Meals from "../Pages/Dashboard/Member/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Member/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Member/Monthly/Expenses";
@@ -61,6 +62,7 @@ import ChatModeration from "../Pages/Dashboard/Admin/ChatModeration";
 import AdminNotifications from "../Pages/Dashboard/Admin/AdminNotifications";
 import AdminSettings from "../Pages/Dashboard/Admin/AdminSettings";
 import HowItWorks from "../Pages/HowItWorks/HowItWorks/HowItWorks";
+import Pricing from "../Pages/Pricing/Pricing";
 
 export const router = createBrowserRouter([
     //Root Layout
@@ -142,6 +144,10 @@ export const router = createBrowserRouter([
             {
                 path: "create-mess",
                 element: <CreateMessForm />
+            },
+            {
+                path: "join-mess",
+                element: <JoinMessPage />
             },
 
             // Monthly portal group
