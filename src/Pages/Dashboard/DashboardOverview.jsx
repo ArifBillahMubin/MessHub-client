@@ -7,7 +7,7 @@ import useAuth from "../../hooks/useAuth";
 import Loading from "../../components/Loading/Loading";
 import MessSetup from "./Member/MessSetup";
 import DevPlaceholder from "../../components/DevPlaceholder/DevPlaceholder";
-import { Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Clock, XCircle } from "lucide-react";
 
 // Shown inside DashboardOverview when hasMess=false — lists pending/rejected requests
 const PendingRequestsPanel = () => {
