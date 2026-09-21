@@ -4,7 +4,7 @@ import {
     UserCircle, Settings, ChevronLeft, ChevronRight, WalletCards,
     MessageCircle, ChevronDown, Megaphone, Vote, FileText,
     ShieldCheck, BarChart2, CreditCard, ClipboardList, MessagesSquare,
-    UserCog, Building2, BookOpen, LogOut,
+    UserCog, Building2, BookOpen, LogOut, Utensils,
 } from "lucide-react";
 import logo from "../../assets/logo/logo.png";
 import { useState } from "react";
@@ -20,18 +20,7 @@ import { toast } from "react-hot-toast";
 const memberMenu = [
     { name: "Overview", path: "/dashboard", icon: LayoutDashboard, end: true },
     { name: "My Mess", path: "/dashboard/my-mess", icon: Home },
-    {
-        name: "Monthly Portal", icon: CalendarDays, group: true,
-        children: [
-            { name: "Meals", path: "/dashboard/monthly/meals" },
-            { name: "Bazar", path: "/dashboard/monthly/bazar" },
-            { name: "Expenses", path: "/dashboard/monthly/expenses" },
-            { name: "My Calculation", path: "/dashboard/monthly/calculation" },
-            { name: "Payments", path: "/dashboard/monthly/payments" },
-            { name: "Settlement", path: "/dashboard/monthly/settlement" },
-            { name: "Monthly Reports", path: "/dashboard/monthly/reports" },
-        ],
-    },
+    { name: "My Meals", path: "/dashboard/my-meals", icon: Utensils },
     { name: "Members", path: "/dashboard/members", icon: Users },
     { name: "Mess Chat", path: "/dashboard/chat", icon: MessageCircle },
     { name: "Announcements", path: "/dashboard/announcements", icon: Megaphone },

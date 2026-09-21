@@ -2,12 +2,14 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from "react-leaflet";
 import L from "leaflet";
 import {
     Search, X, SlidersHorizontal, ArrowLeft,
-    Loader2, MapPin, BedDouble, Utensils, Users,
+    Loader2, MapPin, BedDouble, Utensils, Users, LocateFixed,
 } from "lucide-react";
+import useUserLocation from "../../hooks/useUserLocation";
+import { isNearby } from "../../utils/haversine";
 
 // Reuse same Leaflet icon fix
 const defaultIcon = new L.Icon({
@@ -23,6 +25,21 @@ const selectedIcon = new L.Icon({
     iconSize: [30, 49], iconAnchor: [15, 49], popupAnchor: [1, -40], shadowSize: [49, 49],
 });
 
+// User location marker — distinct pulsing blue dot
+const userLocationIcon = L.divIcon({
+    html: `
+        <div style="position:relative;width:22px;height:22px">
+            <div style="position:absolute;inset:0;border-radius:50%;background:rgba(0,107,104,0.18);animation:pulse 1.8s ease-in-out infinite;"></div>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#006B68;border:2.5px solid #fff;box-shadow:0 1px 6px rgba(0,107,104,0.5);"></div>
+        </div>
+        <style>@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.7);opacity:.3}}</style>
+    `,
+    className: "",
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -14],
+});
+
 const DHAKA = [23.8103, 90.4125];
 
 const MESS_TYPES  = [{ value: "", label: "All Types" }, { value: "student", label: "Student" }, { value: "job_holder", label: "Job Holder" }, { value: "mixed", label: "Mixed" }];
@@ -36,14 +53,12 @@ const FOOD_LABEL = { meal_system: "Meal System", self_cooking: "Self Cooking", b
 
 const publicAxios = axios.create({ baseURL: import.meta.env.VITE_api_url });
 
-// Fits map bounds to all valid posts, or flies to selected
-const MapBoundsController = ({ posts, selectedId }) => {
+// Fits map bounds to all valid posts (+ user location), or flies to selected
+const MapBoundsController = ({ posts, selectedId, userLocation }) => {
     const map = useMap();
     const prevSelected = useRef(null);
 
     useEffect(() => {
-        if (!posts || posts.length === 0) return;
-
         if (selectedId && selectedId !== prevSelected.current) {
             prevSelected.current = selectedId;
             const post = posts.find(p => p._id === selectedId);
@@ -57,12 +72,18 @@ const MapBoundsController = ({ posts, selectedId }) => {
 
         if (!selectedId) {
             const valid = posts.filter(p => p.mess?.location?.latitude != null && p.mess?.location?.longitude != null);
-            if (valid.length === 0) return;
-            if (valid.length === 1) { map.setView([valid[0].mess.location.latitude, valid[0].mess.location.longitude], 15); return; }
-            const bounds = L.latLngBounds(valid.map(p => [p.mess.location.latitude, p.mess.location.longitude]));
+            const points = valid.map(p => [p.mess.location.latitude, p.mess.location.longitude]);
+            if (userLocation) points.push([userLocation.lat, userLocation.lng]);
+            if (points.length === 0) {
+                if (userLocation) map.setView([userLocation.lat, userLocation.lng], 14);
+                return;
+            }
+            if (points.length === 1) { map.setView(points[0], 15); return; }
+            const bounds = L.latLngBounds(points);
             map.fitBounds(bounds, { padding: [50, 50] });
         }
-    }, [posts, selectedId, map]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [posts, selectedId, userLocation]);
 
     return null;
 };
@@ -92,6 +113,9 @@ const FindMessMapPage = () => {
     const [minSeats, setMinSeats]           = useState("");
     const [preferredMemberType, setPreferred] = useState("");
     const [selectedId, setSelectedId]       = useState(null);
+
+    // User location — client-side only, never saved to backend
+    const { userLocation } = useUserLocation();
 
     const debounceRef = useRef(null);
     const handleSearchInput = (val) => {
@@ -123,6 +147,16 @@ const FindMessMapPage = () => {
 
     const posts = data?.data ?? [];
 
+    // nearbyCount — for the header badge only; does NOT filter markers
+    const nearbyCount = userLocation
+        ? posts.filter(p => isNearby(
+            userLocation.lat, userLocation.lng,
+            p.mess?.location?.latitude,
+            p.mess?.location?.longitude,
+            2
+          )).length
+        : 0;
+
     useEffect(() => { setSelectedId(null); }, [q, messType, roomType, foodSystem, minCost, maxCost, minSeats, facilities.join(","), preferredMemberType]);
 
     const handleMarkerClick = useCallback((postId) => {
@@ -139,6 +173,8 @@ const FindMessMapPage = () => {
 
     const moreFilterCount = [minSeats, preferredMemberType, facilities.length ? "f" : ""].filter(Boolean).length;
     const hasFilters = q || messType || roomType || foodSystem || minCost || maxCost || minSeats || facilities.length || preferredMemberType;
+
+
 
     return (
         <div className="flex h-screen flex-col overflow-hidden bg-white">
@@ -157,10 +193,20 @@ const FindMessMapPage = () => {
                             <p className="text-xs text-neutral/50">Explore available messes by location and find a suitable place.</p>
                         </div>
                         {isLoading && <Loader2 size={16} className="ml-auto animate-spin text-primary/40 shrink-0" />}
-                        {!isLoading && posts.length > 0 && (
-                            <span className="ml-auto shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
-                                {posts.length} mess{posts.length !== 1 ? "es" : ""}
-                            </span>
+                        {!isLoading && (
+                            <div className="ml-auto flex shrink-0 items-center gap-2">
+                                {userLocation && nearbyCount > 0 && (
+                                    <span className="flex items-center gap-1 rounded-full bg-secondary/10 px-2.5 py-1 text-xs font-bold text-secondary">
+                                        <LocateFixed size={12} />
+                                        {nearbyCount} within 2 km
+                                    </span>
+                                )}
+                                {posts.length > 0 && (
+                                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
+                                        {posts.length} mess{posts.length !== 1 ? "es" : ""}
+                                    </span>
+                                )}
+                            </div>
                         )}
                     </div>
 
@@ -241,13 +287,26 @@ const FindMessMapPage = () => {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <MapBoundsController posts={posts} selectedId={selectedId} />
+                    <MapBoundsController posts={posts} selectedId={selectedId} userLocation={userLocation} />
 
+                    {/* 2 km radius circle — only when location is available */}
+                    {userLocation && (
+                        <Circle
+                            center={[userLocation.lat, userLocation.lng]}
+                            radius={2000}
+                            pathOptions={{ color: "#006B68", fillColor: "#006B68", fillOpacity: 0.06, weight: 1.5, dashArray: "5 4" }}
+                        />
+                    )}
+
+                    {/* ALL mess markers — none are hidden; isNearby only affects popup badge */}
                     {posts.map(post => {
                         const lat = post.mess?.location?.latitude;
                         const lng = post.mess?.location?.longitude;
                         if (lat == null || lng == null) return null;
                         const isSelected = post._id === selectedId;
+                        const near = userLocation
+                            ? isNearby(userLocation.lat, userLocation.lng, lat, lng, 2)
+                            : false;
 
                         return (
                             <Marker
@@ -259,6 +318,12 @@ const FindMessMapPage = () => {
                             >
                                 <Popup maxWidth={280}>
                                     <div className="w-60">
+                                        {near && (
+                                            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#D5FBF9", color: "#006B68", borderRadius: "999px", padding: "2px 8px", fontSize: "10px", fontWeight: "700", marginBottom: "4px" }}>
+                                                ● Within 2 km
+                                            </span>
+                                        )}
+
                                         {/* Post image */}
                                         {post.images?.[0] && (
                                             <div className="mb-3 -mx-3 -mt-3 h-32 overflow-hidden rounded-t-lg">
@@ -326,6 +391,19 @@ const FindMessMapPage = () => {
                             </Marker>
                         );
                     })}
+                    {/* User location marker */}
+                    {userLocation && (
+                        <Marker
+                            position={[userLocation.lat, userLocation.lng]}
+                            icon={userLocationIcon}
+                            zIndexOffset={1000}
+                        >
+                            <Popup>
+                                <p className="text-sm font-bold text-neutral">Your Location</p>
+                                <p className="mt-0.5 text-xs text-neutral/50">Showing messes within 2 km</p>
+                            </Popup>
+                        </Marker>
+                    )}
                 </MapContainer>
 
                 {/* No results overlay */}
