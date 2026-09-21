@@ -20,13 +20,14 @@ import DashboardOverview from "../Pages/Dashboard/DashboardOverview";
 import MyMess from "../Pages/Dashboard/Member/MyMess";
 import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
 import JoinMessPage from "../Pages/Dashboard/Member/JoinMessPage";
-import Meals from "../Pages/Dashboard/Member/Monthly/Meals";
-import Bazar from "../Pages/Dashboard/Member/Monthly/Bazar";
-import Expenses from "../Pages/Dashboard/Member/Monthly/Expenses";
-import MyCalculation from "../Pages/Dashboard/Member/Monthly/MyCalculation";
-import MemberPayments from "../Pages/Dashboard/Member/Monthly/Payments";
-import Settlement from "../Pages/Dashboard/Member/Monthly/Settlement";
-import MonthlyReports from "../Pages/Dashboard/Member/Monthly/MonthlyReports";
+import MyMeals from "../Pages/Dashboard/Member/MyMeals";
+import Meals from "../Pages/Dashboard/Manager/Monthly/Meals";
+import Bazar from "../Pages/Dashboard/Manager/Monthly/Bazar";
+import Expenses from "../Pages/Dashboard/Manager/Monthly/Expenses";
+import MyCalculation from "../Pages/Dashboard/Manager/Monthly/MyCalculation";
+import MemberPayments from "../Pages/Dashboard/Manager/Monthly/Payments";
+import Settlement from "../Pages/Dashboard/Manager/Monthly/Settlement";
+import MonthlyReports from "../Pages/Dashboard/Manager/Monthly/MonthlyReports";
 
 // Shared dashboard pages (used by both member and manager)
 import Members from "../Pages/Dashboard/Shared/Members";
@@ -164,45 +165,9 @@ export const router = createBrowserRouter([
                 path: "join-mess",
                 element: <JoinMessPage />
             },
-
-            // Monthly portal group
-            { 
-                path: "monthly/meals",
-                element: <Meals /> 
-            },
             {
-                path: "monthly/bazar",
-                element: <Bazar /> 
-            },
-            {
-                path: "monthly/expenses",
-                element: <Expenses />
-            },
-            { 
-                path: "monthly/calculation",
-                element: <MyCalculation />
-            },
-            { 
-                path: "monthly/payments",
-                element: <MemberPayments /> 
-            },
-            { 
-                path: "monthly/settlement",
-                element: <Settlement />
-            },
-            { 
-                path: "monthly/reports",
-                element: <MonthlyReports />
-            },
-
-            // Manager — monthly (extra routes reusing same path prefix)
-            { 
-                path: "monthly/current",
-                element: <CurrentMonth /> 
-            },
-            { 
-                path: "monthly/calculations",
-                element: <Calculations /> 
+                path: "my-meals",
+                element: <MyMeals />
             },
 
             //  Shared routes (member + manager) 
@@ -256,6 +221,45 @@ export const router = createBrowserRouter([
                 path: "mess/settings",
                 element: <MessSettings /> 
             },
+
+            // Monthly portal (Manager only)
+            { 
+                path: "monthly/current",
+                element: <CurrentMonth /> 
+            },
+            { 
+                path: "monthly/meals",
+                element: <Meals /> 
+            },
+            {
+                path: "monthly/bazar",
+                element: <Bazar /> 
+            },
+            {
+                path: "monthly/expenses",
+                element: <Expenses />
+            },
+            { 
+                path: "monthly/calculation",
+                element: <MyCalculation />
+            },
+            { 
+                path: "monthly/payments",
+                element: <MemberPayments /> 
+            },
+            { 
+                path: "monthly/calculations",
+                element: <Calculations /> 
+            },
+            { 
+                path: "monthly/settlement",
+                element: <Settlement />
+            },
+            { 
+                path: "monthly/reports",
+                element: <MonthlyReports />
+            },
+
             { 
                 path: "service-plan", 
                 element: <ServicePlan /> 
