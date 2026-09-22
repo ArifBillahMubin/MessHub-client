@@ -27,7 +27,6 @@ import Bazar from "../Pages/Dashboard/Manager/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Manager/Monthly/Expenses";
 import MyCalculation from "../Pages/Dashboard/Manager/Monthly/MyCalculation";
 import MemberPayments from "../Pages/Dashboard/Manager/Monthly/Payments";
-import Settlement from "../Pages/Dashboard/Manager/Monthly/Settlement";
 import MonthlyReports from "../Pages/Dashboard/Manager/Monthly/MonthlyReports";
 
 // Shared dashboard pages (used by both member and manager)
@@ -255,10 +254,6 @@ export const router = createBrowserRouter([
             { 
                 path: "monthly/calculations",
                 element: <Calculations /> 
-            },
-            { 
-                path: "monthly/settlement",
-                element: <Settlement />
             },
             { 
                 path: "monthly/reports",

@@ -8,13 +8,17 @@ import {
     CheckCircle2, 
     XCircle,
     AlertTriangle,
-    Package
+    Package,
+    Eye,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import useCurrentUser from "../../../hooks/useCurrentUser";
 import Loading from "../../../components/Loading/Loading";
 import SubmitBazarModal from "./SubmitBazarModal";
+import ViewBazarModal from "./ViewBazarModal";
 
 const toastSuccess = (msg) => toast.success(msg, {
     duration: 3000,
@@ -45,6 +49,10 @@ const MyBazar = () => {
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [submittingNew, setSubmittingNew] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPerPage = 6;
 
     const loadData = useCallback(async () => {
         if (!user?.email || !currentUser) return;
@@ -104,6 +112,39 @@ const MyBazar = () => {
         }
         setShowSubmitModal(true);
     };
+
+    const openViewModal = (record) => {
+        setSelectedRecord(record);
+        setShowViewModal(true);
+    };
+
+    const closeViewModal = () => {
+        setShowViewModal(false);
+        setSelectedRecord(null);
+    };
+
+    // Pagination calculations
+    const totalPages = Math.ceil(history.length / recordsPerPage);
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const currentRecords = history.slice(startIndex, endIndex);
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    // Reset to page 1 when history changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [history.length]);
 
     const fmt = (n) => n.toLocaleString('en-BD');
 
@@ -226,10 +267,17 @@ const MyBazar = () => {
             {/* My Bazar History */}
             <div className="rounded-2xl border border-primary/10 bg-white shadow-sm">
                 <div className="border-b border-gray-100 px-6 py-4">
-                    <h2 className="flex items-center gap-2 text-sm font-extrabold text-neutral">
-                        <Calendar size={16} className="text-primary" />
-                        My Bazar History
-                    </h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="flex items-center gap-2 text-sm font-extrabold text-neutral">
+                            <Calendar size={16} className="text-primary" />
+                            My Bazar History
+                        </h2>
+                        {history.length > 0 && (
+                            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
+                                {history.length} Total
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {history.length === 0 ? (
@@ -245,54 +293,102 @@ const MyBazar = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="divide-y divide-gray-50">
-                        {history.map((record) => (
-                            <div key={record._id} className="p-6 hover:bg-background/30 transition">
-                                <div className="mb-3 flex items-start justify-between">
-                                    <div>
-                                        <p className="text-sm font-bold text-neutral">
-                                            {new Date(record.date).toLocaleDateString('en-GB', { 
-                                                day: '2-digit', 
-                                                month: 'long', 
-                                                year: 'numeric' 
-                                            })}
-                                        </p>
-                                        <p className="mt-0.5 text-xs text-neutral/60">
-                                            {record.items.length} items • ৳{fmt(record.totalAmount)}
-                                        </p>
-                                    </div>
-                                    <StatusBadge status={record.status} />
-                                </div>
-
-                                {/* Items */}
-                                <div className="mb-3 space-y-1.5">
-                                    {record.items.map((item, index) => (
-                                        <div key={index} className="flex items-center justify-between text-xs">
-                                            <span className="text-neutral/70">
-                                                {item.name} - {item.quantity} {item.unit}
-                                            </span>
-                                            <span className="font-mono font-semibold text-neutral">৳{fmt(item.amount)}</span>
+                    <>
+                        <div className="divide-y divide-gray-50">
+                            {currentRecords.map((record) => (
+                                <div key={record._id} className="p-6 hover:bg-background/30 transition">
+                                    <div className="mb-3 flex items-start justify-between">
+                                        <div>
+                                            <p className="text-sm font-bold text-neutral">
+                                                {new Date(record.date).toLocaleDateString('en-GB', { 
+                                                    day: '2-digit', 
+                                                    month: 'long', 
+                                                    year: 'numeric' 
+                                                })}
+                                            </p>
+                                            <p className="mt-0.5 text-xs text-neutral/60">
+                                                {record.items.length} items • ৳{fmt(record.totalAmount)}
+                                            </p>
                                         </div>
-                                    ))}
-                                </div>
-
-                                {record.note && (
-                                    <p className="mb-3 text-xs italic text-neutral/60">&ldquo;{record.note}&rdquo;</p>
-                                )}
-
-                                {/* Rejection Reason */}
-                                {record.status === 'rejected' && record.rejectionReason && (
-                                    <div className="flex items-start gap-2 rounded-lg border border-tertiary/20 bg-tertiary/5 p-3">
-                                        <AlertTriangle size={14} className="mt-0.5 text-tertiary" />
-                                        <div className="flex-1">
-                                            <p className="text-[10px] font-bold uppercase tracking-wide text-tertiary">Rejection Reason</p>
-                                            <p className="mt-1 text-xs text-neutral/80">{record.rejectionReason}</p>
-                                        </div>
+                                        <StatusBadge status={record.status} />
                                     </div>
-                                )}
+
+                                    {/* Items Preview */}
+                                    <div className="mb-3 space-y-1.5">
+                                        {record.items.slice(0, 3).map((item, index) => (
+                                            <div key={index} className="flex items-center justify-between text-xs">
+                                                <span className="text-neutral/70">
+                                                    {item.name} - {item.quantity} {item.unit}
+                                                </span>
+                                                <span className="font-mono font-semibold text-neutral">৳{fmt(item.amount)}</span>
+                                            </div>
+                                        ))}
+                                        {record.items.length > 3 && (
+                                            <p className="text-xs italic text-neutral/50">
+                                                +{record.items.length - 3} more items
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {record.note && (
+                                        <p className="mb-3 text-xs italic text-neutral/60">&ldquo;{record.note}&rdquo;</p>
+                                    )}
+
+                                    {/* Rejection Reason Preview */}
+                                    {record.status === 'rejected' && record.rejectionReason && (
+                                        <div className="mb-3 flex items-start gap-2 rounded-lg border border-tertiary/20 bg-tertiary/5 p-3">
+                                            <AlertTriangle size={14} className="mt-0.5 text-tertiary" />
+                                            <div className="flex-1">
+                                                <p className="text-[10px] font-bold uppercase tracking-wide text-tertiary">Rejection Reason</p>
+                                                <p className="mt-1 text-xs text-neutral/80">{record.rejectionReason}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* View Button */}
+                                    <button
+                                        onClick={() => openViewModal(record)}
+                                        className="flex items-center gap-2 rounded-lg border border-primary/20 bg-white px-3 py-2 text-xs font-bold text-primary transition hover:bg-primary/5"
+                                    >
+                                        <Eye size={14} />
+                                        View Details
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="border-t border-gray-100 px-6 py-4">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-xs text-neutral/60">
+                                        Showing {startIndex + 1}-{Math.min(endIndex, history.length)} of {history.length}
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={goToPreviousPage}
+                                            disabled={currentPage === 1}
+                                            className="flex items-center gap-1 rounded-lg border border-primary/20 bg-white px-3 py-2 text-xs font-bold text-primary transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+                                        >
+                                            <ChevronLeft size={14} />
+                                            Previous
+                                        </button>
+                                        <span className="text-xs font-semibold text-neutral">
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                        <button
+                                            onClick={goToNextPage}
+                                            disabled={currentPage === totalPages}
+                                            className="flex items-center gap-1 rounded-lg border border-primary/20 bg-white px-3 py-2 text-xs font-bold text-primary transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+                                        >
+                                            Next
+                                            <ChevronRight size={14} />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 )}
             </div>
 
@@ -308,6 +404,14 @@ const MyBazar = () => {
                         setSubmittingNew(false);
                     }}
                     onSubmit={handleSubmitBazar}
+                />
+            )}
+
+            {/* View Modal */}
+            {showViewModal && selectedRecord && (
+                <ViewBazarModal
+                    record={selectedRecord}
+                    onClose={closeViewModal}
                 />
             )}
         </div>

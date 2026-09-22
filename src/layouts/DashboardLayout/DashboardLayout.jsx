@@ -50,7 +50,6 @@ const managerMenu = [
             { name: "Expenses", path: "/dashboard/monthly/expenses" },
             { name: "Payments", path: "/dashboard/monthly/payments" },
             { name: "Calculations", path: "/dashboard/monthly/calculations" },
-            { name: "Settlement", path: "/dashboard/monthly/settlement" },
             { name: "Monthly Reports", path: "/dashboard/monthly/reports" },
         ],
     },
