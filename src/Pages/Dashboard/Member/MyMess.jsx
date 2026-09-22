@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import {
-    Home, MapPin, Users, Calendar, Hash, Phone, Mail,
-    Crown, User as UserIcon, Check
+    Home, MapPin, Calendar, Phone, Mail, Crown, User as UserIcon
 } from "lucide-react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
@@ -15,10 +14,10 @@ const MyMess = () => {
     const { currentUser, isUserLoading } = useCurrentUser();
 
     const [mess, setMess] = useState(null);
-    const [members, setMembers] = useState([]);
     const [manager, setManager] = useState(null);
     const [loading, setLoading] = useState(true);
     const [myMembership, setMyMembership] = useState(null);
+    const [memberCount, setMemberCount] = useState(0);
 
     const loadData = useCallback(async () => {
         if (!user?.email) return;
@@ -33,10 +32,10 @@ const MyMess = () => {
             }
             setMess(messData);
 
-            // Get all members
+            // Get member info (just for count and manager)
             const membersRes = await axiosSecure.get(`/mess-members/${messData._id}?limit=50`);
             const allMembers = membersRes.data.members || [];
-            setMembers(allMembers);
+            setMemberCount(allMembers.length);
 
             // Find manager
             const managerMember = allMembers.find(m => m.role === "manager");
@@ -86,65 +85,55 @@ const MyMess = () => {
                 </span>
                 <h1 className="mt-1.5 text-2xl font-extrabold text-neutral">My Mess</h1>
                 <p className="mt-1 text-sm font-medium text-neutral/50">
-                    View your mess information, manager and active members.
+                    View your mess information and manager details.
                 </p>
             </div>
 
             {/* Mess Overview Card */}
             <div className="mb-5 rounded-2xl border border-primary/10 bg-white p-6 shadow-sm">
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* Left Column */}
-                    <div className="space-y-4">
-                        <InfoRow
-                            icon={<Home size={16} />}
-                            label="Mess Name"
-                            value={mess.name}
-                        />
+                <h2 className="mb-4 flex items-center gap-2 text-sm font-extrabold text-neutral">
+                    <Home size={16} className="text-primary" />
+                    Mess Information
+                </h2>
+                <div className="space-y-4">
+                    <InfoRow
+                        icon={<Home size={16} />}
+                        label="Mess Name"
+                        value={mess.name}
+                    />
+                    {locationStr && (
                         <InfoRow
                             icon={<MapPin size={16} />}
                             label="Location"
-                            value={locationStr || "Not set"}
+                            value={locationStr}
                         />
+                    )}
+                    {mess.description && (
                         <InfoRow
-                            icon={<Hash size={16} />}
-                            label="Mess Code"
-                            value={
-                                <span className="font-mono text-base font-bold text-primary">
-                                    {mess.messCode}
-                                </span>
-                            }
+                            icon={<UserIcon size={16} />}
+                            label="Description"
+                            value={mess.description}
                         />
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="space-y-4">
+                    )}
+                    {myMembership?.joinedAt && (
                         <InfoRow
-                            icon={<Users size={16} />}
-                            label="Members"
-                            value={
-                                <span>
-                                    <span className="font-bold text-neutral">{members.length}</span>
-                                    <span className="text-neutral/40"> / {mess.maxMembers}</span>
-                                </span>
-                            }
+                            icon={<Calendar size={16} />}
+                            label="You Joined"
+                            value={new Date(myMembership.joinedAt).toLocaleDateString("en-GB", {
+                                day: "numeric", month: "long", year: "numeric"
+                            })}
                         />
-                        {myMembership?.joinedAt && (
-                            <InfoRow
-                                icon={<Calendar size={16} />}
-                                label="You Joined"
-                                value={new Date(myMembership.joinedAt).toLocaleDateString("en-GB", {
-                                    day: "numeric", month: "long", year: "numeric"
-                                })}
-                            />
-                        )}
-                        {mess.description && (
-                            <InfoRow
-                                icon={<UserIcon size={16} />}
-                                label="Description"
-                                value={mess.description}
-                            />
-                        )}
-                    </div>
+                    )}
+                    <InfoRow
+                        icon={<UserIcon size={16} />}
+                        label="Mess Status"
+                        value={
+                            <span className="inline-flex items-center gap-1.5">
+                                <span className="h-2 w-2 rounded-full bg-secondary" />
+                                <span className="font-semibold text-secondary">Active</span>
+                            </span>
+                        }
+                    />
                 </div>
             </div>
 
@@ -203,63 +192,7 @@ const MyMess = () => {
                 </div>
             )}
 
-            {/* Active Members */}
-            <div className="rounded-2xl border border-primary/10 bg-white shadow-sm">
-                <div className="border-b border-gray-100 px-6 py-4">
-                    <h2 className="flex items-center gap-2 text-sm font-extrabold text-neutral">
-                        <Users size={16} className="text-primary" />
-                        Active Members ({members.length})
-                    </h2>
-                </div>
 
-                <div className="divide-y divide-gray-100">
-                    {members.map(member => {
-                        const isMe = member.email === user.email;
-                        const isManager = member.role === "manager";
-
-                        return (
-                            <div key={member._id} className="flex items-center justify-between gap-4 px-6 py-4">
-                                <div className="flex min-w-0 items-center gap-3">
-                                    {member.photoURL ? (
-                                        <img
-                                            src={member.photoURL}
-                                            alt={member.name}
-                                            referrerPolicy="no-referrer"
-                                            className="h-10 w-10 shrink-0 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                                            {member.name?.charAt(0).toUpperCase() || "?"}
-                                        </span>
-                                    )}
-                                    <div className="min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <p className="truncate font-bold text-neutral">
-                                                {member.name}
-                                            </p>
-                                            {isMe && (
-                                                <span className="flex items-center gap-1 rounded-full bg-secondary/10 px-2 py-0.5 text-[10px] font-bold text-secondary">
-                                                    <Check size={10} />
-                                                    You
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="truncate text-xs text-neutral/60">{member.email}</p>
-                                    </div>
-                                </div>
-
-                                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                                    isManager
-                                        ? "bg-primary/10 text-primary"
-                                        : "bg-secondary/10 text-secondary"
-                                }`}>
-                                    {isManager ? "Manager" : "Member"}
-                                </span>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
         </div>
     );
 };

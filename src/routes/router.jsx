@@ -21,12 +21,12 @@ import MyMess from "../Pages/Dashboard/Member/MyMess";
 import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
 import JoinMessPage from "../Pages/Dashboard/Member/JoinMessPage";
 import MyMeals from "../Pages/Dashboard/Member/MyMeals";
+import MyBazar from "../Pages/Dashboard/Member/MyBazar";
 import Meals from "../Pages/Dashboard/Manager/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Manager/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Manager/Monthly/Expenses";
 import MyCalculation from "../Pages/Dashboard/Manager/Monthly/MyCalculation";
 import MemberPayments from "../Pages/Dashboard/Manager/Monthly/Payments";
-import Settlement from "../Pages/Dashboard/Manager/Monthly/Settlement";
 import MonthlyReports from "../Pages/Dashboard/Manager/Monthly/MonthlyReports";
 
 // Shared dashboard pages (used by both member and manager)
@@ -169,6 +169,10 @@ export const router = createBrowserRouter([
                 path: "my-meals",
                 element: <MyMeals />
             },
+            {
+                path: "my-bazar",
+                element: <MyBazar />
+            },
 
             //  Shared routes (member + manager) 
             { 
@@ -250,10 +254,6 @@ export const router = createBrowserRouter([
             { 
                 path: "monthly/calculations",
                 element: <Calculations /> 
-            },
-            { 
-                path: "monthly/settlement",
-                element: <Settlement />
             },
             { 
                 path: "monthly/reports",

@@ -6,6 +6,8 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import Loading from "../../components/Loading/Loading";
 import MessSetup from "./Member/MessSetup";
+import ManagerOverview from "./Manager/ManagerOverview";
+import MemberOverview from "./Member/MemberOverview";
 import DevPlaceholder from "../../components/DevPlaceholder/DevPlaceholder";
 import { Clock, XCircle } from "lucide-react";
 
@@ -106,10 +108,10 @@ const DashboardOverview = () => {
     }
 
     if (messRole === "manager") {
-        return <DevPlaceholder title="Manager Dashboard Overview" />;
+        return <ManagerOverview />;
     }
 
-    return <DevPlaceholder title="Member Dashboard Overview" />;
+    return <MemberOverview />;
 };
 
 export default DashboardOverview;
