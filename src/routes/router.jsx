@@ -21,6 +21,7 @@ import MyMess from "../Pages/Dashboard/Member/MyMess";
 import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
 import JoinMessPage from "../Pages/Dashboard/Member/JoinMessPage";
 import MyMeals from "../Pages/Dashboard/Member/MyMeals";
+import MyBazar from "../Pages/Dashboard/Member/MyBazar";
 import Meals from "../Pages/Dashboard/Manager/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Manager/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Manager/Monthly/Expenses";
@@ -168,6 +169,10 @@ export const router = createBrowserRouter([
             {
                 path: "my-meals",
                 element: <MyMeals />
+            },
+            {
+                path: "my-bazar",
+                element: <MyBazar />
             },
 
             //  Shared routes (member + manager) 
