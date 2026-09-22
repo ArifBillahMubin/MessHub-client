@@ -491,7 +491,7 @@ const MessDetailsPage = () => {
                 </div>
             </div>
 
-            {/* Mobile sticky bottom CTA */}
+            {/* Mobile sticky bottom bar */}
             <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 backdrop-blur-sm lg:hidden">
                 <div className="flex items-center gap-3">
                     <div className="flex-1 min-w-0">
@@ -502,11 +502,10 @@ const MessDetailsPage = () => {
                     </div>
                     <button
                         type="button"
-                        disabled
-                        title="Phase 2 — coming soon"
-                        className="shrink-0 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white opacity-50 cursor-not-allowed"
+                        onClick={() => contactRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                        className="shrink-0 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary/90"
                     >
-                        Request to Join
+                        Contact Manager
                     </button>
                 </div>
             </div>
