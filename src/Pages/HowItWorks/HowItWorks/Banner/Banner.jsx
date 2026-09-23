@@ -34,7 +34,7 @@ const Banner = () => {
         </p>
 
         {/* Floating Info Card */}
-        <div className="mt-8 flex w-full max-w-[560px] flex-col items-center justify-between gap-4 rounded-2xl border border-[#006B68]/5 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(23,59,58,0.10)] sm:flex-row sm:px-6">
+        <div className="mt-8 flex w-full max-w-[660px] flex-col items-center justify-between gap-4 rounded-2xl border border-[#006B68]/5 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(23,59,58,0.10)] sm:flex-row sm:px-6">
 
           {/* Left Side */}
           <div className="flex items-center gap-4">
@@ -47,10 +47,10 @@ const Banner = () => {
                 </span>
               </div>
 
-              <div className="text-left">
-                <p className="text-[10px] font-bold leading-none text-[#006B68]">
+              <div className="text-left ">
+                <p className="text-[11px] font-bold leading-none text-[#006B68]">
                    <span className='text-black'>Mess</span>Hub
-                  <p className='text-[7px] mt-1 text-green-500'>BETTER MEALS, HAPPIER TOGETHER</p>
+                  <p className=' text-[8px] mt-1 text-green-500'>BETTER MEALS, HAPPIER TOGETHER</p>
                 </p>
  
               </div>
@@ -61,11 +61,11 @@ const Banner = () => {
 
             {/* Information */}
             <div className="text-left">
-              <p className="text-[9px] font-semibold text-[#006B68]">
+              <p className="text-[10px] font-bold text-[#006B68]">
                 Transparent Living
               </p>
 
-              <p className="mt-0.5 text-[9px] text-[#173B3A]/60 sm:text-[10px]">
+              <p className="mt-0.5 text-[9px] text-[#173B3A]/90 sm:text-[11px]">
                 Bangladesh's Smartest Mess Suite
               </p>
             </div>

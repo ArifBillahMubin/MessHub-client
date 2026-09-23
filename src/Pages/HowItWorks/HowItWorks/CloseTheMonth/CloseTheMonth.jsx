@@ -93,7 +93,7 @@ const CloseTheMonth = () => {
             </ol>
 
             {/* Footer note */}
-            <div className="mt-6 rounded-xl bg-emerald-50 p-4 text-xs leading-5 text-black">
+            <div className="mt-6 rounded-xl bg-emerald-50 p-4 text-sm leading-5 text-black">
               When the Manager closes the monthly portal, MessHub generates
               the final report and sends it automatically to active
               members' registered emails.
