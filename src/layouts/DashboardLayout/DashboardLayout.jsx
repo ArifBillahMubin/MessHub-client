@@ -23,6 +23,7 @@ const memberMenu = [
     { name: "My Meals", path: "/dashboard/my-meals", icon: Utensils },
     { name: "My Bazar", path: "/dashboard/my-bazar", icon: ShoppingBag },
     { name: "Members", path: "/dashboard/members", icon: Users },
+    { name: "Monthly Report", path: "/dashboard/monthly/report", icon: FileText },
     { name: "Mess Chat", path: "/dashboard/chat", icon: MessageCircle },
     { name: "Announcements", path: "/dashboard/announcements", icon: Megaphone },
     { name: "Polls", path: "/dashboard/polls", icon: Vote },

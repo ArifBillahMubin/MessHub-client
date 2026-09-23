@@ -28,6 +28,7 @@ import Expenses from "../Pages/Dashboard/Manager/Monthly/Expenses";
 import MyCalculation from "../Pages/Dashboard/Manager/Monthly/MyCalculation";
 import MemberPayments from "../Pages/Dashboard/Manager/Monthly/Payments";
 import MonthlyReports from "../Pages/Dashboard/Manager/Monthly/MonthlyReports";
+import MonthlyReport from "../Pages/Dashboard/Member/MonthlyReport";
 
 // Shared dashboard pages (used by both member and manager)
 import Members from "../Pages/Dashboard/Shared/Members";
@@ -172,6 +173,10 @@ export const router = createBrowserRouter([
             {
                 path: "my-bazar",
                 element: <MyBazar />
+            },
+            {
+                path: "monthly/report",
+                element: <MonthlyReport />
             },
 
             //  Shared routes (member + manager) 

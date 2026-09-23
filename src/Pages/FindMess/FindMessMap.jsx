@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-le
 import L from "leaflet";
 import { isNearby } from "../../utils/haversine";
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
+//  Icons 
 
 const defaultIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -80,7 +80,7 @@ const MapController = ({ posts, selectedId, userLocation }) => {
     return null;
 };
 
-// ─── FindMessMap ──────────────────────────────────────────────────────────────
+//  FindMessMap 
 // Props:
 //   posts         — full result array from the API
 //   selectedId    — currently highlighted post _id
@@ -140,7 +140,7 @@ const FindMessMap = ({ posts, selectedId, onMarkerClick, userLocation }) => {
                 if (lat == null || lng == null) return null;
 
                 const isSelected = post._id === selectedId;
-                // Badge shown only in the popup — does not affect visibility
+                // Badge shown only in the popup - does not affect visibility
                 const near = userLocation
                     ? isNearby(userLocation.lat, userLocation.lng, lat, lng)
                     : false;

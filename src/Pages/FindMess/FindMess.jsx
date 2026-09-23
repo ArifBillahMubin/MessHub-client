@@ -34,7 +34,7 @@ const FilterSelect = ({ value, onChange, options }) => (
     </select>
 );
 
-// ─── FindMess ─────────────────────────────────────────────────────────────────
+//  FindMess 
 
 const FindMess = () => {
     const navigate = useNavigate();
@@ -43,7 +43,7 @@ const FindMess = () => {
     // User location — client-side only, never sent to backend
     const { userLocation, locationError } = useUserLocation();
 
-    // ── Filter state (all unchanged) ─────────────────────────────────────────
+    //  Filter state (all unchanged) 
     const [searchInput, setSearchInput]           = useState("");
     const [q, setQ]                               = useState("");
     const [messType, setMessType]                 = useState("");
@@ -68,7 +68,7 @@ const FindMess = () => {
 
     const resetPage = useCallback(() => setPage(1), []);
 
-    // ── Query params (unchanged) ──────────────────────────────────────────────
+    //  Query params (unchanged) 
     const params = new URLSearchParams();
     if (q)                   params.set("q", q);
     if (messType)            params.set("messType", messType);
@@ -137,9 +137,7 @@ const FindMess = () => {
     return (
         <div className="min-h-screen bg-gray-50">
 
-            {/* ══════════════════════════════════════════════════════════════
-                HERO — left: search/filters, right: small map
-            ══════════════════════════════════════════════════════════════ */}
+            {/*  HERO — left: search/filters, right: small map */}
             <div className="bg-gradient-to-b from-background to-white border-b border-primary/10">
                 <div className="mx-auto max-w-7xl px-4 pt-7 pb-6 sm:px-6 lg:px-8">
 
@@ -276,7 +274,7 @@ const FindMess = () => {
                         </div>
 
                         {/* RIGHT: small Mess Locations map in hero */}
-                        <div className="w-full lg:w-72 xl:w-80 shrink-0">
+                        <div className="relative w-full lg:w-72 xl:w-80 shrink-0">
                             <div className="h-full min-h-[280px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:min-h-0">
                                 {/* Map header */}
                                 <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
@@ -351,9 +349,9 @@ const FindMess = () => {
                 </div>
             </div>
 
-            {/* ══════════════════════════════════════════════════════════════
+            {/* 
                 MAIN CONTENT — cards only, 4-column grid on desktop
-            ══════════════════════════════════════════════════════════════ */}
+             */}
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
                 {/* Result summary */}
