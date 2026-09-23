@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import Navbar from "../../Pages/Shared/Navbar/Navbar";
 import Footer from "../../Pages/Shared/Footer/Footer";
+import VisitorChatbot from "../../components/VisitorChatbot/VisitorChatbot";
 
 const RootLayout = () => {
     return (
@@ -10,6 +11,7 @@ const RootLayout = () => {
                 <Outlet></Outlet>
             </div>
             <Footer></Footer>
+            <VisitorChatbot />
         </div>
     );
 };

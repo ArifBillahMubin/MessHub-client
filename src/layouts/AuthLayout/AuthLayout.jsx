@@ -1,6 +1,7 @@
 
 import { NavLink, Outlet, useLocation } from "react-router";
 import logo from '../../assets/logo/logo.png'
+import VisitorChatbot from "../../components/VisitorChatbot/VisitorChatbot";
 import {
     UtensilsCrossed,
     ShoppingBasket,
@@ -273,6 +274,7 @@ const AuthLayout = () => {
                 </div>
 
             </div>
+            <VisitorChatbot />
         </div>
     );
 };
