@@ -7,13 +7,14 @@ import {
     UserCog, Building2, BookOpen, LogOut, Utensils, ShoppingBag,
 } from "lucide-react";
 import logo from "../../assets/logo/logo.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useRole from "../../hooks/useRole";
 import useCurrentUser from "../../hooks/useCurrentUser";
 import useMessRole from "../../hooks/useMessRole";
 import useAuth from "../../hooks/useAuth";
 import Loading from "../../components/Loading/Loading";
 import { toast } from "react-hot-toast";
+import NotificationDropdown from "../../components/Notifications/NotificationDropdown";
 
 // ─── Sidebar menu configurations ──────────────────────────────────────────────
 
@@ -24,11 +25,16 @@ const memberMenu = [
     { name: "My Bazar", path: "/dashboard/my-bazar", icon: ShoppingBag },
     { name: "Members", path: "/dashboard/members", icon: Users },
     { name: "Monthly Report", path: "/dashboard/monthly/report", icon: FileText },
-    { name: "Mess Chat", path: "/dashboard/chat", icon: MessageCircle },
-    { name: "Announcements", path: "/dashboard/announcements", icon: Megaphone },
-    { name: "Polls", path: "/dashboard/polls", icon: Vote },
+    {
+        name: "Communication", icon: MessagesSquare, group: true,
+        children: [
+            { name: "Mess Chat", path: "/dashboard/chat" },
+            { name: "Announcements", path: "/dashboard/announcements" },
+            { name: "Polls", path: "/dashboard/polls" },
+        ],
+    },
     { name: "Notifications", path: "/dashboard/notifications", icon: Bell },
-    { name: "Profile / Settings", path: "/dashboard/profile", icon: UserCircle },
+    { name: "Profile / Settings", path: "/dashboard/settings", icon: UserCircle },
 ];
 
 const managerMenu = [
@@ -63,8 +69,7 @@ const managerMenu = [
         ],
     },
     { name: "Notifications", path: "/dashboard/notifications", icon: Bell },
-    { name: "Service Plan", path: "/dashboard/service-plan", icon: CreditCard },
-    { name: "Settings", path: "/dashboard/settings", icon: Settings },
+    { name: "Profile / Settings", path: "/dashboard/settings", icon: UserCircle },
 ];
 
 const adminMenu = [
@@ -177,6 +182,7 @@ const SidebarLink = ({ item, isOpen, onMobileClose }) => {
 const DashboardLayout = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
     const { user, logout } = useAuth();
     const [role, isRoleLoading] = useRole();                      // global account role (member | super_admin)
@@ -185,6 +191,18 @@ const DashboardLayout = () => {
     const navigate = useNavigate();
 
     const isLoading = isRoleLoading || isUserLoading || isMessRoleLoading;
+
+    // Close profile dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (profileDropdownOpen && !event.target.closest('.profile-dropdown-container')) {
+                setProfileDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [profileDropdownOpen]);
 
     // ── Sidebar menu selection ─────────────────────────────────────────────
     // super_admin always gets the admin menu regardless of mess state.
@@ -350,26 +368,81 @@ const DashboardLayout = () => {
                         {/* Right side */}
                         <div className="flex items-center gap-2">
                             {/* Notifications */}
-                            <button
-                                type="button"
-                                className="relative flex h-10 w-10 items-center justify-center rounded-xl text-neutral/70 transition hover:bg-background hover:text-primary"
-                                aria-label="Notifications"
-                            >
-                                <Bell size={20} />
-                                <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-tertiary ring-2 ring-white" />
-                            </button>
+                            <NotificationDropdown />
 
-                            {/* Profile avatar */}
-                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-primary/10">
-                                {user?.photoURL ? (
-                                    <img
-                                        src={user.photoURL}
-                                        alt={displayName}
-                                        referrerPolicy="no-referrer"
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : (
-                                    <span className="text-sm font-bold text-primary">{avatarInitial}</span>
+                            {/* Profile avatar with dropdown */}
+                            <div className="profile-dropdown-container relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                                    className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-primary/10 transition hover:ring-2 hover:ring-primary/20"
+                                >
+                                    {user?.photoURL ? (
+                                        <img
+                                            src={user.photoURL}
+                                            alt={displayName}
+                                            referrerPolicy="no-referrer"
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-sm font-bold text-primary">{avatarInitial}</span>
+                                    )}
+                                </button>
+
+                                {/* Profile Dropdown Menu */}
+                                {profileDropdownOpen && (
+                                    <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-primary/10 bg-white shadow-xl">
+                                        {/* User Info Header */}
+                                        <div className="border-b border-primary/10 p-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10">
+                                                    {user?.photoURL ? (
+                                                        <img
+                                                            src={user.photoURL}
+                                                            alt={displayName}
+                                                            referrerPolicy="no-referrer"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-base font-bold text-primary">{avatarInitial}</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 overflow-hidden">
+                                                    <p className="truncate text-sm font-bold text-neutral">{displayName}</p>
+                                                    <p className="truncate text-xs text-neutral/60">{user?.email}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Menu Items */}
+                                        <div className="p-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setProfileDropdownOpen(false);
+                                                    navigate("/dashboard/settings");
+                                                }}
+                                                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-neutral transition hover:bg-primary/5 hover:text-primary"
+                                            >
+                                                <UserCircle size={18} className="shrink-0" />
+                                                <span>Profile / Settings</span>
+                                            </button>
+
+                                            <div className="my-2 h-px bg-primary/10" />
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setProfileDropdownOpen(false);
+                                                    handleLogout();
+                                                }}
+                                                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                                            >
+                                                <LogOut size={18} className="shrink-0" />
+                                                <span>Logout</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </div>

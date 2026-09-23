@@ -11,6 +11,7 @@ import {
     Wallet,
     Users,
     X,
+    Lock,
 } from "lucide-react";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import useAuth from "../../../../hooks/useAuth";
@@ -38,6 +39,8 @@ const MonthlyReports = () => {
     const [calculations, setCalculations] = useState(null);
     const [selectedMember, setSelectedMember] = useState(null);
     const [showMemberModal, setShowMemberModal] = useState(false);
+    const [isMonthClosed, setIsMonthClosed] = useState(false);
+    const [closingMonth, setClosingMonth] = useState(false);
 
     const loadData = useCallback(async () => {
         if (!user?.email || !currentUser?.hasMess) {
@@ -56,22 +59,89 @@ const MonthlyReports = () => {
             }
             setMess(messData);
 
-            const calculationsRes = await axiosSecure.get(`/calculations/${messData._id}?email=${user.email}`);
-            setCalculations(calculationsRes.data);
+            // Check if current calendar month is closed
+            const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+            const statusRes = await axiosSecure.get(`/month-status/${messData._id}/${monthStr}`);
+            setIsMonthClosed(statusRes.data.isClosed);
+
+            // If current month is closed, show historical report instead of calculations
+            if (statusRes.data.isClosed) {
+                // Load historical report for closed month
+                try {
+                    const reportRes = await axiosSecure.get(`/monthly-reports/${messData._id}/${monthStr}?email=${user.email}`);
+                    const report = reportRes.data.report;
+                    
+                    // Transform historical report to match calculations format
+                    const transformedData = {
+                        summary: {
+                            totalCost: report.summary.totalCost ?? 0,
+                            totalPaid: report.summary.totalPayments ?? 0, // Historical uses totalPayments
+                            totalDue: report.summary.totalDue ?? 0,
+                            totalAdvance: report.summary.totalAdvance ?? 0,
+                        },
+                        mealCalculation: {
+                            totalMeals: report.summary.totalMeals ?? 0,
+                            mealRate: report.summary.mealRate ?? 0,
+                            totalBazarCost: report.summary.totalBazarCost ?? 0,
+                        },
+                        rentCalculation: {
+                            totalRent: report.summary.totalRent ?? 0,
+                            activeMembers: report.summary.activeMemberCount ?? 0,
+                        },
+                        khalabillCalculation: {
+                            totalKhalabill: report.summary.totalKhalabill ?? 0,
+                            activeMembers: report.summary.activeMemberCount ?? 0,
+                            perMember: report.summary.activeMemberCount > 0 
+                                ? report.summary.totalKhalabill / report.summary.activeMemberCount 
+                                : 0,
+                        },
+                        commonExpenseCalculation: {
+                            totalCommonExpense: report.summary.totalCommonExpense ?? 0,
+                            activeMembers: report.summary.activeMemberCount ?? 0,
+                            perMember: report.summary.activeMemberCount > 0 
+                                ? report.summary.totalCommonExpense / report.summary.activeMemberCount 
+                                : 0,
+                        },
+                        memberSettlement: report.members.map(m => ({
+                            userId: m.userId,
+                            user: { name: m.name ?? 'Unknown', email: m.email ?? '' },
+                            meals: m.meals ?? { breakfast: 0, lunch: 0, dinner: 0, guestMeal: 0, total: 0 },
+                            foodCost: m.foodCost ?? 0,
+                            rent: m.rent ?? 0,
+                            khalabill: m.khalabill ?? 0,
+                            commonExpense: m.commonExpense ?? 0,
+                            totalCost: m.totalCost ?? 0,
+                            paid: m.totalPaid ?? 0, // Historical uses totalPaid
+                            balance: m.balance ?? 0,
+                            status: m.status ?? 'Settled',
+                        })),
+                    };
+                    setCalculations(transformedData);
+                } catch (err) {
+                    console.error("Failed to load historical report:", err);
+                    // If historical report fails, still try to load calculations
+                    const calculationsRes = await axiosSecure.get(`/calculations/${messData._id}?email=${user.email}`);
+                    setCalculations(calculationsRes.data);
+                }
+            } else {
+                // Load current calculations for open month
+                const calculationsRes = await axiosSecure.get(`/calculations/${messData._id}?email=${user.email}`);
+                setCalculations(calculationsRes.data);
+            }
         } catch (err) {
             console.error("Failed to load monthly reports:", err);
             toast.error("Failed to load monthly reports");
         } finally {
             setLoading(false);
         }
-    }, [user?.email, currentUser?.hasMess, axiosSecure]);
+    }, [user?.email, currentUser?.hasMess, axiosSecure, year, month]);
 
     useEffect(() => {
         loadData();
     }, [loadData]);
 
-    const fmt = (n) =>
-        n.toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmt = (value) => 
+        Number(value ?? 0).toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const handleDownloadFullReport = async () => {
         console.log('PDF download clicked - Full Monthly Report');
@@ -156,6 +226,175 @@ const MonthlyReports = () => {
         }
     };
 
+    const handleCloseMonth = async () => {
+        if (closingMonth || isMonthClosed) return;
+
+        // Step 1: Monthly Report Download
+        const step1Result = await Swal.fire({
+            title: `Close ${MONTH_NAMES[month]} ${year}?`,
+            html: `
+                <p style="margin-bottom: 16px;">Before closing this month, download the monthly report and review the active members.</p>
+                <p style="font-size: 14px; color: #666;">Closing this month will finalize all calculations and lock the month from further edits.</p>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: 'Download Report',
+            denyButtonText: 'Continue without Download',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#006B68',
+            denyButtonColor: '#2E9B45',
+            cancelButtonColor: '#6B7280',
+        });
+
+        if (step1Result.isDismissed) return;
+
+        // Download report if user chose to
+        if (step1Result.isConfirmed) {
+            try {
+                await handleDownloadFullReport();
+            } catch (error) {
+                console.error('PDF download failed:', error);
+            }
+        }
+
+        // Step 2: Member Review and Selection
+        if (!calculations || !calculations.memberSettlement) {
+            toast.error('Unable to load member data');
+            return;
+        }
+
+        const activeMembers = calculations.memberSettlement;
+        const currentUserId = currentUser?._id;
+
+        // Build member selection HTML
+        const memberListHtml = activeMembers.map((member, index) => {
+            const isCurrentUser = member.userId === currentUserId;
+            const balance = member.balance;
+            const statusColor = member.status === 'Due' ? '#DC2626' : member.status === 'Advance' ? '#2E9B45' : '#006B68';
+
+            return `
+                <div style="display: flex; align-items: center; padding: 12px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 8px; background: ${isCurrentUser ? '#F3F4F6' : '#fff'};">
+                    <input 
+                        type="checkbox" 
+                        id="member-${index}" 
+                        value="${member.userId}"
+                        ${isCurrentUser ? 'disabled' : ''}
+                        style="margin-right: 12px; width: 16px; height: 16px; cursor: ${isCurrentUser ? 'not-allowed' : 'pointer'};"
+                    />
+                    <label for="member-${index}" style="flex: 1; text-align: left; cursor: ${isCurrentUser ? 'not-allowed' : 'pointer'}; opacity: ${isCurrentUser ? '0.6' : '1'};">
+                        <div style="font-weight: 600; color: #173B3A;">${member.user?.name || 'Unknown'}${isCurrentUser ? ' (You)' : ''}</div>
+                        <div style="font-size: 12px; color: #6B7280;">
+                            Cost: ৳${fmt(member.totalCost)} | Paid: ৳${fmt(member.paid)} | 
+                            <span style="color: ${statusColor}; font-weight: 600;">${member.status}: ৳${fmt(Math.abs(balance))}</span>
+                        </div>
+                    </label>
+                </div>
+            `;
+        }).join('');
+
+        const step2Result = await Swal.fire({
+            title: 'Review Active Members',
+            html: `
+                <div style="text-align: left; max-height: 400px; overflow-y: auto;">
+                    <p style="margin-bottom: 16px; color: #6B7280;">Select members to remove from the mess (optional). Their finalized monthly report will be preserved.</p>
+                    ${memberListHtml}
+                    ${activeMembers.some(m => m.userId === currentUserId) ? '<p style="margin-top: 12px; font-size: 12px; color: #9CA3AF;">Note: You cannot remove yourself.</p>' : ''}
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Continue',
+            cancelButtonText: 'Back',
+            confirmButtonColor: '#006B68',
+            cancelButtonColor: '#6B7280',
+            width: '600px',
+            preConfirm: () => {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked:not([disabled])');
+                return Array.from(checkboxes).map(cb => cb.value);
+            }
+        });
+
+        if (step2Result.isDismissed) {
+            // User clicked back, restart the process
+            return handleCloseMonth();
+        }
+
+        const selectedMemberIds = step2Result.value || [];
+
+        // Step 3: Final Confirmation
+        const hasRemovals = selectedMemberIds.length > 0;
+        const removalNames = hasRemovals
+            ? activeMembers
+                  .filter(m => selectedMemberIds.includes(m.userId))
+                  .map(m => m.user?.name || 'Unknown')
+                  .join(', ')
+            : '';
+
+        const confirmResult = await Swal.fire({
+            title: hasRemovals ? `Close ${MONTH_NAMES[month]} ${year} with Member Changes?` : `Close ${MONTH_NAMES[month]} ${year}?`,
+            html: hasRemovals
+                ? `
+                    <p style="margin-bottom: 8px;">The following members will be removed from the active mess:</p>
+                    <p style="font-weight: 600; color: #DC2626; margin-bottom: 12px;">${removalNames}</p>
+                    <p style="color: #6B7280;">Their finalized monthly financial history will be preserved. The month will then be closed.</p>
+                `
+                : `
+                    <p style="color: #6B7280;">The monthly report has been prepared. Closing this month will finalize the current calculations and lock this month from further edits.</p>
+                `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm & Close Month',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#DC2626',
+            cancelButtonColor: '#6B7280',
+        });
+
+        if (!confirmResult.isConfirmed) return;
+
+        // Execute month closing
+        setClosingMonth(true);
+        Swal.fire({
+            title: 'Closing Month...',
+            text: 'Please wait while we finalize the monthly report',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+            await axiosSecure.post(`/close-month/${mess._id}`, {
+                email: user.email,
+                month: monthStr,
+                selectedMemberIds: selectedMemberIds
+            });
+
+            Swal.fire({
+                title: 'Month Closed Successfully!',
+                text: hasRemovals 
+                    ? `${MONTH_NAMES[month]} ${year} has been closed and ${selectedMemberIds.length} member(s) removed.`
+                    : `${MONTH_NAMES[month]} ${year} has been closed successfully.`,
+                icon: 'success',
+                confirmButtonColor: '#006B68',
+            });
+
+            // Reload data to reflect closed status
+            loadData();
+        } catch (error) {
+            console.error('Failed to close month:', error);
+            Swal.fire({
+                title: 'Failed to Close Month',
+                text: error.response?.data?.message || 'An error occurred while closing the month',
+                icon: 'error',
+                confirmButtonColor: '#006B68',
+            });
+        } finally {
+            setClosingMonth(false);
+        }
+    };
+
     if (loading || isUserLoading) return <Loading />;
 
     if (!mess || !calculations) {
@@ -174,17 +413,34 @@ const MonthlyReports = () => {
                 <div>
                     <h1 className="text-2xl font-extrabold text-neutral">Monthly Reports</h1>
                     <p className="mt-1 text-sm text-neutral/60">
-                        Complete report for {MONTH_NAMES[month]} {year}
+                        {isMonthClosed ? 'Historical report for' : 'Complete report for'} {MONTH_NAMES[month]} {year}
+                        {isMonthClosed && (
+                            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                                <Lock size={12} />
+                                Closed
+                            </span>
+                        )}
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <button
-                        onClick={() => navigate("/dashboard/monthly/calculations")}
-                        className="flex items-center gap-2 rounded-lg border border-primary/20 bg-white px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
-                    >
-                        <Calculator size={16} />
-                        View Calculations
-                    </button>
+                    {!isMonthClosed && (
+                        <button
+                            onClick={() => navigate("/dashboard/monthly/calculations")}
+                            className="flex items-center gap-2 rounded-lg border border-primary/20 bg-white px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
+                        >
+                            <Calculator size={16} />
+                            View Calculations
+                        </button>
+                    )}
+                    {isMonthClosed && (
+                        <button
+                            onClick={() => navigate("/dashboard/monthly/historical-reports")}
+                            className="flex items-center gap-2 rounded-lg border border-primary/20 bg-white px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
+                        >
+                            <Eye size={16} />
+                            View All Reports
+                        </button>
+                    )}
                     <button
                         onClick={handleDownloadFullReport}
                         className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white transition hover:bg-primary/90"
@@ -192,6 +448,16 @@ const MonthlyReports = () => {
                         <Download size={16} />
                         Download PDF
                     </button>
+                    {!isMonthClosed && (
+                        <button
+                            onClick={handleCloseMonth}
+                            disabled={closingMonth}
+                            className="flex items-center gap-2 rounded-lg bg-tertiary px-4 py-2.5 text-sm font-bold text-white transition hover:bg-tertiary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Lock size={16} />
+                            {closingMonth ? 'Closing...' : 'Close Month'}
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -407,7 +673,7 @@ const StatusBadge = ({ status }) => {
 };
 
 const MemberReportModal = ({ member, messName, month, year, onClose, onDownload }) => {
-    const fmt = (n) => n.toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmt = (value) => Number(value ?? 0).toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const monthName = MONTH_NAMES[month];
 
     const foodPaid = member.paymentsByCategory?.meal || 0;
@@ -555,7 +821,7 @@ const MiniCard = ({ label, value, color = "neutral" }) => {
 };
 
 const CategorySection = ({ title, cost, paid, balance, status }) => {
-    const fmt = (n) => n.toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmt = (value) => Number(value ?? 0).toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     return (
         <div className="rounded-lg border border-gray-100 bg-background/30 p-4">

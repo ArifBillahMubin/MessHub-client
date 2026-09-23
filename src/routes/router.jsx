@@ -22,12 +22,14 @@ import CreateMessForm from "../Pages/Dashboard/Member/CreateMessForm";
 import JoinMessPage from "../Pages/Dashboard/Member/JoinMessPage";
 import MyMeals from "../Pages/Dashboard/Member/MyMeals";
 import MyBazar from "../Pages/Dashboard/Member/MyBazar";
+import MyHistoricalReports from "../Pages/Dashboard/Member/MyHistoricalReports";
 import Meals from "../Pages/Dashboard/Manager/Monthly/Meals";
 import Bazar from "../Pages/Dashboard/Manager/Monthly/Bazar";
 import Expenses from "../Pages/Dashboard/Manager/Monthly/Expenses";
 import MyCalculation from "../Pages/Dashboard/Manager/Monthly/MyCalculation";
 import MemberPayments from "../Pages/Dashboard/Manager/Monthly/Payments";
 import MonthlyReports from "../Pages/Dashboard/Manager/Monthly/MonthlyReports";
+import HistoricalReports from "../Pages/Dashboard/Manager/Monthly/HistoricalReports";
 import MonthlyReport from "../Pages/Dashboard/Member/MonthlyReport";
 
 // Shared dashboard pages (used by both member and manager)
@@ -36,7 +38,7 @@ import MessChat from "../Pages/Dashboard/Shared/MessChat";
 import Announcements from "../Pages/Dashboard/Shared/Announcements";
 import Polls from "../Pages/Dashboard/Shared/Polls";
 import Notifications from "../Pages/Dashboard/Shared/Notifications";
-import ProfileSettings from "../Pages/Dashboard/Shared/ProfileSettings";
+import ProfileSettings from "../Pages/Dashboard/Settings/ProfileSettings";
 
 // Manager pages
 import MessMembers from "../Pages/Dashboard/Manager/Mess/MessMembers";
@@ -48,7 +50,7 @@ import MessSettings from "../Pages/Dashboard/Manager/Mess/MessSettings";
 import CurrentMonth from "../Pages/Dashboard/Manager/Monthly/CurrentMonth";
 import Calculations from "../Pages/Dashboard/Manager/Monthly/Calculations";
 import ServicePlan from "../Pages/Dashboard/Manager/ServicePlan";
-import Settings from "../Pages/Dashboard/Manager/Settings";
+// Settings component removed - using ProfileSettings for all users now
 
 // Admin pages
 import AdminUsers from "../Pages/Dashboard/Admin/AdminUsers";
@@ -178,6 +180,10 @@ export const router = createBrowserRouter([
                 path: "monthly/report",
                 element: <MonthlyReport />
             },
+            {
+                path: "historical-reports",
+                element: <MyHistoricalReports />
+            },
 
             //  Shared routes (member + manager) 
             { 
@@ -201,7 +207,7 @@ export const router = createBrowserRouter([
                 element: <Notifications />
             },
             { 
-                path: "profile", 
+                path: "settings", 
                 element: <ProfileSettings />
             },
 
@@ -264,14 +270,14 @@ export const router = createBrowserRouter([
                 path: "monthly/reports",
                 element: <MonthlyReports />
             },
+            {
+                path: "monthly/historical-reports",
+                element: <HistoricalReports />
+            },
 
             { 
                 path: "service-plan", 
                 element: <ServicePlan /> 
-            },
-            { 
-                path: "settings",
-                element: <Settings /> 
             },
         ],
     },

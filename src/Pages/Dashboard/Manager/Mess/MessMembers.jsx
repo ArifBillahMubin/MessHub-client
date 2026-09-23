@@ -1,14 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
-import { Search, Users, X, ChevronLeft, ChevronRight, Mail, Phone, Calendar, Shield } from "lucide-react";
+import Swal from "sweetalert2";
+import { Search, Users, X, ChevronLeft, ChevronRight, Mail, Phone, Calendar, Shield, RefreshCw } from "lucide-react";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import useAuth from "../../../../hooks/useAuth";
+import useCurrentUser from "../../../../hooks/useCurrentUser";
 import Loading from "../../../../components/Loading/Loading";
 
 // ─── Member detail modal ──────────────────────────────────────────────────────
 
-const MemberModal = ({ member, onClose }) => {
+const MemberModal = ({ member, onClose, onManagerChange, currentUserId, messId }) => {
     if (!member) return null;
+
+    const isCurrentUser = member.userId === currentUserId;
+    const canChangeManager = member.role === 'member' && !isCurrentUser;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -57,6 +62,18 @@ const MemberModal = ({ member, onClose }) => {
                     />
                     <DetailRow icon={<Shield size={14} />} label="Status" value="Active" valueClass="text-secondary font-semibold" />
                 </div>
+
+                {canChangeManager && (
+                    <div className="mt-4 border-t border-gray-100 pt-4">
+                        <button
+                            onClick={() => onManagerChange(member)}
+                            className="flex w-full items-center justify-center gap-2 rounded-lg bg-tertiary px-4 py-2.5 text-sm font-bold text-white transition hover:bg-tertiary/90"
+                        >
+                            <RefreshCw size={16} />
+                            Change Manager to {member.name}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -97,6 +114,7 @@ const SummaryCard = ({ value, label, sub }) => (
 const MessMembers = () => {
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
+    const { currentUser } = useCurrentUser();
 
     // Mess context — loaded once
     const [messId, setMessId] = useState(null);
@@ -130,6 +148,66 @@ const MessMembers = () => {
             setDebouncedSearch(val);
             setPage(1);
         }, 350);
+    };
+
+    // Manager change handler
+    const handleManagerChange = async (member) => {
+        const result = await Swal.fire({
+            title: `Change Manager to ${member.name}?`,
+            html: `
+                <p style="margin-bottom: 8px;">This will transfer the manager role to <strong>${member.name}</strong>.</p>
+                <p style="color: #6B7280; font-size: 14px;">You will become a regular member, but remain active in the mess.</p>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Change Manager',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#FF8A00',
+            cancelButtonColor: '#6B7280',
+        });
+
+        if (!result.isConfirmed) return;
+
+        Swal.fire({
+            title: 'Changing Manager...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            await axiosSecure.post(`/change-manager/${messId}`, {
+                email: user.email,
+                newManagerUserId: member.userId
+            });
+
+            Swal.fire({
+                title: 'Manager Changed!',
+                text: `${member.name} is now the manager of this mess.`,
+                icon: 'success',
+                confirmButtonColor: '#006B68',
+            });
+
+            // Close modal and refresh list
+            setSelectedMember(null);
+            fetchMembers();
+
+            // Redirect to member dashboard after short delay
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 2000);
+        } catch (error) {
+            console.error('Failed to change manager:', error);
+            Swal.fire({
+                title: 'Failed to Change Manager',
+                text: error.response?.data?.message || 'An error occurred',
+                icon: 'error',
+                confirmButtonColor: '#006B68',
+            });
+        }
     };
 
     // Load the manager's mess once
@@ -374,7 +452,13 @@ const MessMembers = () => {
 
             {/* Member detail modal */}
             {selectedMember && (
-                <MemberModal member={selectedMember} onClose={() => setSelectedMember(null)} />
+                <MemberModal 
+                    member={selectedMember} 
+                    onClose={() => setSelectedMember(null)}
+                    onManagerChange={handleManagerChange}
+                    currentUserId={currentUser?._id}
+                    messId={messId}
+                />
             )}
         </div>
     );
