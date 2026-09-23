@@ -41,6 +41,8 @@ const Navbar = () => {
         { name: "How It Works", path: "/how-it-works" },
         { name: "Pricing", path: "/pricing" },
         { name: "About", path: "/about" },
+        { name: "Contact", path: "/contact" },
+        
     ];
 
     // Close dropdown when clicking outside

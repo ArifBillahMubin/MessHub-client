@@ -69,6 +69,9 @@ import Pricing from "../Pages/Pricing/Pricing";
 import FindMess from "../Pages/FindMess/FindMess";
 import FindMessMapPage from "../Pages/FindMess/FindMessMapPage";
 import MessDetailsPage from "../Pages/FindMess/MessDetailsPage";
+import Contact from "../Pages/Contact/Contact";
+import GuidedInquiries from "../Pages/Contact/GuidedInquiries/GuidedInquiries";
+import Support from "../Pages/Contact/Support/Support";
 
 
 
@@ -98,6 +101,14 @@ export const router = createBrowserRouter([
                 path: "find-mess/:id",
                 element: <MessDetailsPage />,
             },
+            {
+                path: "contact",
+                element: <Contact/>,
+            },
+            {
+                path: "contact",
+                element: <GuidedInquiries/>,
+            }
         ],
     },
 
