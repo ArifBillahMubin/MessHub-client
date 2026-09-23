@@ -99,14 +99,14 @@ const FindMess = () => {
             <div className="mt-4 grid grid-cols-3 divide-x divide-slate-200 rounded-xl bg-white/70 py-3">
               <div className="text-center">
                 <p className="text-[11px] text-slate-500">Seat Rent</p>
-                <p className="flex mt-1 text-sm font-bold text-slate-900 ml-9">
+                <p className="flex mt-1 text-sm font-bold text-slate-900 ml-14">
                   <TbCurrencyTaka size={20} />3,800
                 </p>
               </div>
 
               <div className="text-center">
                 <p className="text-[11px] text-slate-500">Est. Meal</p>
-                <p className="flex mt-1 text-sm font-bold text-slate-900 ml-9">
+                <p className="flex mt-1 text-sm font-bold text-slate-900 ml-12">
                   <TbCurrencyTaka size={20} />42/meal
                 </p>
               </div>
