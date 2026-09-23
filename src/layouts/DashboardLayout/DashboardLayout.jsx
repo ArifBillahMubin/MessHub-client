@@ -4,7 +4,7 @@ import {
     UserCircle, Settings, ChevronLeft, ChevronRight, WalletCards,
     MessageCircle, ChevronDown, Megaphone, Vote, FileText,
     ShieldCheck, BarChart2, CreditCard, ClipboardList, MessagesSquare,
-    UserCog, Building2, BookOpen, LogOut, Utensils,
+    UserCog, Building2, BookOpen, LogOut, Utensils, ShoppingBag,
 } from "lucide-react";
 import logo from "../../assets/logo/logo.png";
 import { useState } from "react";
@@ -21,6 +21,7 @@ const memberMenu = [
     { name: "Overview", path: "/dashboard", icon: LayoutDashboard, end: true },
     { name: "My Mess", path: "/dashboard/my-mess", icon: Home },
     { name: "My Meals", path: "/dashboard/my-meals", icon: Utensils },
+    { name: "My Bazar", path: "/dashboard/my-bazar", icon: ShoppingBag },
     { name: "Members", path: "/dashboard/members", icon: Users },
     { name: "Mess Chat", path: "/dashboard/chat", icon: MessageCircle },
     { name: "Announcements", path: "/dashboard/announcements", icon: Megaphone },
@@ -49,7 +50,6 @@ const managerMenu = [
             { name: "Expenses", path: "/dashboard/monthly/expenses" },
             { name: "Payments", path: "/dashboard/monthly/payments" },
             { name: "Calculations", path: "/dashboard/monthly/calculations" },
-            { name: "Settlement", path: "/dashboard/monthly/settlement" },
             { name: "Monthly Reports", path: "/dashboard/monthly/reports" },
         ],
     },
