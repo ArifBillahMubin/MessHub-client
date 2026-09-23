@@ -1,11 +1,8 @@
-/* import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { MessageCircle, Send, X, Bot, ArrowUpRight } from "lucide-react";
-import {
-  SUGGESTED_QUESTIONS,
-  WELCOME_MESSAGE,
-  getBotReply,
-} from "../../data/chatbotKnowledge";
+import { SUGGESTED_QUESTIONS, WELCOME_MESSAGE } from "./knowledge";
+import { askAssistant } from "./api";
 
 const VisitorChatbot = () => {
   const [open, setOpen] = useState(false);
@@ -28,28 +25,39 @@ const VisitorChatbot = () => {
     }
   }, [open]);
 
-  const pushBotReply = (text) => {
-    setTyping(true);
-    const reply = getBotReply(text);
-    window.setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: `${Date.now()}-bot`, role: "bot", ...reply },
-      ]);
-      setTyping(false);
-    }, 420);
-  };
-
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
     const value = (text ?? input).trim();
     if (!value || typing) return;
+
+    const history = messages
+      .filter((item) => item.id !== "welcome")
+      .slice(-8)
+      .map((item) => ({ role: item.role, text: item.answer }));
 
     setMessages((prev) => [
       ...prev,
       { id: `${Date.now()}-user`, role: "user", answer: value, links: [] },
     ]);
     setInput("");
-    pushBotReply(value);
+    setTyping(true);
+
+    try {
+      const reply = await askAssistant(value, history);
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now()}-bot`, role: "bot", ...reply },
+      ]);
+    } catch (err) {
+      const apiMessage =
+        err?.response?.data?.message ||
+        "Could not reach the assistant. Start the MessHub server and add USER_GEMINI_API_KEY.";
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now()}-bot`, role: "bot", answer: apiMessage, links: [] },
+      ]);
+    } finally {
+      setTyping(false);
+    }
   };
 
   const handleSubmit = (event) => {
@@ -97,7 +105,7 @@ const VisitorChatbot = () => {
                       : "rounded-bl-md border border-primary/10 bg-white text-neutral shadow-sm"
                   }`}
                 >
-                  <p>{message.answer}</p>
+                  <p className="whitespace-pre-wrap">{message.answer}</p>
                   {message.role === "bot" && message.links?.length > 0 && (
                     <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {message.links.map((link) => (
@@ -177,4 +185,4 @@ const VisitorChatbot = () => {
   );
 };
 
-export default VisitorChatbot; */
+export default VisitorChatbot;

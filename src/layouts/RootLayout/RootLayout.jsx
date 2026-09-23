@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import Navbar from "../../Pages/Shared/Navbar/Navbar";
 import Footer from "../../Pages/Shared/Footer/Footer";
-import VisitorChatbot from "../../components/VisitorChatbot/VisitorChatbot";
+import VisitorChatbot from "../../chatbot";
 
 const RootLayout = () => {
     return (

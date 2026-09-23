@@ -1,7 +1,7 @@
 
 import { NavLink, Outlet, useLocation } from "react-router";
 import logo from '../../assets/logo/logo.png'
-import VisitorChatbot from "../../components/VisitorChatbot/VisitorChatbot";
+import VisitorChatbot from "../../chatbot";
 import {
     UtensilsCrossed,
     ShoppingBasket,

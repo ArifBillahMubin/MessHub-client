@@ -12,11 +12,11 @@
 //
 // ======================================================
 
-
+/*
 // ======================================================
 // Suggested Questions
 // ======================================================
-
+//
 export const SUGGESTED_QUESTIONS = [
   "What is MessHub?",
   "How do I find a mess?",
@@ -2304,4 +2304,4 @@ export const WELCOME_MESSAGE = {
     LINKS.how,
     LINKS.pricing,
   ],
-};
+}; */
