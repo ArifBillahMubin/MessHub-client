@@ -210,7 +210,9 @@ const Support = () => {
               hover:bg-[#f5ffff]
             "
           >
-            <span>View How It Works</span>
+            <a href="how-it-works">
+              <span>View How It Works</span>
+            </a>
 
             <ArrowRight
               size={14}
